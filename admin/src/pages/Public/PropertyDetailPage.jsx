@@ -213,7 +213,7 @@ const PropertyDetailPage = () => {
             </div>
             <div className="detail-item">
               <span className="detail-label">डिसमिल</span>
-              <span className="detail-value">{property.decimal || '-'}</span>
+              <span className="detail-value">{property.decimals || '-'}</span>
             </div>
             <div className="detail-item">
               <span className="detail-label">जिला</span>

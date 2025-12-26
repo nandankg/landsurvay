@@ -162,8 +162,8 @@ const PropertyCard = ({ property, onClick }) => {
     if (property.acres && property.acres > 0) {
       return `${property.acres} ऐकर`
     }
-    if (property.decimal && property.decimal > 0) {
-      return `${property.decimal} डिसमिल`
+    if (property.decimals && property.decimals > 0) {
+      return `${property.decimals} डिसमिल`
     }
     return 'N/A'
   }

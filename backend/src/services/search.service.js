@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 
 /**
  * Search by mobile phone number
- * Returns owner with all their properties
+ * Returns owner with all their properties in consistent format
  */
 const searchByPhone = async (phone) => {
   const person = await prisma.person.findFirst({
@@ -17,13 +17,8 @@ const searchByPhone = async (phone) => {
     include: {
       properties: {
         include: {
-          documents: {
-            select: {
-              id: true,
-              fileName: true,
-              fileType: true,
-              uploadedAt: true
-            }
+          _count: {
+            select: { documents: true }
           }
         }
       }
@@ -32,16 +27,27 @@ const searchByPhone = async (phone) => {
 
   if (!person) return null;
 
-  // Mask Aadhaar in response
+  // Return consistent format with owner and properties
   return {
-    ...person,
-    aadhaar: maskAadhaar(person.aadhaar)
+    owner: {
+      id: person.id,
+      name: person.name,
+      fatherName: person.fatherName,
+      gender: person.gender,
+      phone: person.phone,
+      aadhaar: maskAadhaar(person.aadhaar)
+    },
+    properties: person.properties.map(p => ({
+      ...p,
+      documentsCount: p._count?.documents || 0
+    })),
+    propertiesCount: person.properties.length
   };
 };
 
 /**
  * Search by Aadhaar number
- * Returns owner with all their properties
+ * Returns owner with all their properties in consistent format
  */
 const searchByAadhaar = async (aadhaar) => {
   // Clean the Aadhaar input
@@ -52,13 +58,8 @@ const searchByAadhaar = async (aadhaar) => {
     include: {
       properties: {
         include: {
-          documents: {
-            select: {
-              id: true,
-              fileName: true,
-              fileType: true,
-              uploadedAt: true
-            }
+          _count: {
+            select: { documents: true }
           }
         }
       }
@@ -67,42 +68,56 @@ const searchByAadhaar = async (aadhaar) => {
 
   if (!person) return null;
 
-  // Mask Aadhaar in response
+  // Return consistent format with owner and properties
   return {
-    ...person,
-    aadhaar: maskAadhaar(person.aadhaar)
+    owner: {
+      id: person.id,
+      name: person.name,
+      fatherName: person.fatherName,
+      gender: person.gender,
+      phone: person.phone,
+      aadhaar: maskAadhaar(person.aadhaar)
+    },
+    properties: person.properties.map(p => ({
+      ...p,
+      documentsCount: p._count?.documents || 0
+    })),
+    propertiesCount: person.properties.length
   };
 };
 
 /**
  * Search by Property ID
- * Returns single property with owner details
+ * Returns single property with owner details in consistent format
  */
 const searchByPropertyId = async (propertyId) => {
   const property = await prisma.landProperty.findUnique({
     where: { propertyUniqueId: propertyId },
     include: {
       owner: true,
-      documents: {
-        select: {
-          id: true,
-          fileName: true,
-          fileType: true,
-          uploadedAt: true
-        }
+      _count: {
+        select: { documents: true }
       }
     }
   });
 
   if (!property) return null;
 
-  // Mask Aadhaar in response
+  // Return consistent format with owner and properties
   return {
-    ...property,
-    owner: {
-      ...property.owner,
+    owner: property.owner ? {
+      id: property.owner.id,
+      name: property.owner.name,
+      fatherName: property.owner.fatherName,
+      gender: property.owner.gender,
+      phone: property.owner.phone,
       aadhaar: maskAadhaar(property.owner.aadhaar)
-    }
+    } : null,
+    properties: [{
+      ...property,
+      documentsCount: property._count?.documents || 0
+    }],
+    propertiesCount: 1
   };
 };
 
@@ -134,7 +149,7 @@ const getPropertyById = async (id) => {
       plotNo: property.plotNo,
       khataNo: property.khataNo,
       acres: property.acres,
-      decimal: property.decimal,
+      decimals: property.decimals,
       northBoundary: property.northBoundary,
       southBoundary: property.southBoundary,
       eastBoundary: property.eastBoundary,
