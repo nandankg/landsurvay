@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bihar Land Survey & Revenue - Mobile App Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --govt-red: #C41E3A;
+            --govt-red-dark: #9B1B30;
+            --module-blue: #2E5AAC;
+            --module-blue-hover: #1E4A9C;
+            --bihar-saffron: #FF6B35;
+            --bg-cream: #FAFAF8;
+            --bg-presentation: #1a1a2e;
+            --text-dark: #1a1a1a;
+            --text-medium: #4a4a4a;
+            --input-bg: #f0f0f0;
+            --doc-blue: #4FC3F7;
+            --shadow-soft: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-phone: 0 25px 80px rgba(0,0,0,0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg-presentation);
+            min-height: 100vh;
+            overflow-x: auto;
+        }
+
+        /* Presentation Header */
+        .presentation-header {
+            text-align: center;
+            padding: 40px 20px 30px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .presentation-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .presentation-header p {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.6);
+            font-weight: 400;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--govt-red), var(--bihar-saffron));
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Screens Container */
+        .screens-container {
+            display: flex;
+            gap: 40px;
+            padding: 50px 40px 60px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            min-width: max-content;
+        }
+
+        /* Phone Mockup */
+        .phone-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeInUp 0.8s ease-out backwards;
+        }
+
+        .phone-wrapper:nth-child(1) { animation-delay: 0.1s; }
+        .phone-wrapper:nth-child(2) { animation-delay: 0.2s; }
+        .phone-wrapper:nth-child(3) { animation-delay: 0.3s; }
+        .phone-wrapper:nth-child(4) { animation-delay: 0.4s; }
+        .phone-wrapper:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .screen-label {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .phone-frame {
+            width: 280px;
+            height: 580px;
+            background: #0a0a0a;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: var(--shadow-phone);
+            position: relative;
+        }
+
+        .phone-frame::before {
+            content: '';
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 25px;
+            background: #0a0a0a;
+            border-radius: 15px;
+            z-index: 10;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+            background: white;
+        }
+
+        /* Screen 1 - App Launcher */
+        .screen-launcher {
+            background: linear-gradient(145deg, #1a1a3e 0%, #2d1b4e 30%, #4a2060 60%, #2d1b4e 100%);
+            display: flex;
+            flex-direction: column;
+            padding: 60px 20px 30px;
+        }
+
+        .launcher-app-icon {
+            width: 70px;
+            height: 70px;
+            background: white;
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .launcher-app-icon svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .launcher-app-name {
+            color: white;
+            font-size: 11px;
+            font-weight: 500;
+            text-align: center;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .launcher-spacer {
+            flex: 1;
+        }
+
+        .launcher-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .launcher-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+        }
+
+        .launcher-dot.active {
+            background: white;
+        }
+
+        .launcher-search {
+            background: rgba(255,255,255,0.15);
+            border-radius: 25px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .launcher-search span {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+        }
+
+        .launcher-search-dots {
+            margin-left: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .launcher-search-dots span {
+            width: 4px;
+            height: 4px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+        }
+
+        /* Screen 2 - Splash */
+        .screen-splash {
+            background: white;
+            display: flex;
+            flex-direction: column;
+            padding: 50px 20px 30px;
+            position: relative;
+        }
+
+        .splash-bihar-logo {
+            position: absolute;
+            top: 50px;
+            right: 15px;
+            width: 55px;
+            height: 55px;
+        }
+
+        .splash-main-logo {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .splash-logo-circle {
+            width: 200px;
+            height: 200px;
+            position: relative;
+        }
+
+        .splash-logo-text {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .splash-logo-text text {
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 11px;
+            fill: #333;
+            font-weight: 500;
+        }
+
+        .splash-tree-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+        }
+
+        .splash-nic-logo {
+            text-align: center;
+            padding-bottom: 10px;
+        }
+
+        .splash-nic-logo .nic-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0066b3;
+            letter-spacing: 2px;
+        }
+
+        .splash-nic-logo .nic-hindi {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-size: 10px;
+            color: #e65100;
+        }
+
+        .splash-nic-logo .nic-english {
+            font-size: 10px;
+            color: #0066b3;
+        }
+
+        /* Screen 3 - Home */
+        .screen-home {
+            background: white;
+            display: flex;
+            flex-direction: column;
+            padding: 45px 15px 20px;
+        }
+
+        .home-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding-right: 5px;
+        }
+
+        .home-title {
+            flex: 1;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 16px;
+            color: var(--govt-red);
+            line-height: 1.4;
+            font-weight: 600;
+        }
+
+        .home-bihar-logo {
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+        }
+
+        .home-modules {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .module-btn {
+            background: var(--module-blue);
+            color: white;
+            border-radius: 12px;
+            padding: 18px 12px;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+            box-shadow: 0 3px 10px rgba(46, 90, 172, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .module-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 90, 172, 0.4);
+        }
+
+        .module-btn.highlight {
+            background: linear-gradient(135deg, var(--module-blue), #1e3a8a);
+            box-shadow: 0 4px 15px rgba(46, 90, 172, 0.5);
+            border: 2px solid #60a5fa;
+        }
+
+        .home-footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .home-footer svg {
+            width: 50px;
+            height: 50px;
+        }
+
+        .home-footer-text {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-size: 12px;
+            color: var(--govt-red);
+            font-weight: 600;
+        }
+
+        /* Screen 4 - Search */
+        .screen-search {
+            background: white;
+            padding: 45px 20px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .search-header svg {
+            width: 45px;
+            height: 45px;
+        }
+
+        .search-header-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 13px;
+            color: var(--govt-red);
+            line-height: 1.3;
+            margin-top: 5px;
+        }
+
+        .search-title {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--govt-red);
+            text-align: center;
+            margin: 20px 0 30px;
+        }
+
+        .search-field {
+            margin-bottom: 20px;
+        }
+
+        .search-label {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 50px;
+            background: var(--input-bg);
+            border: none;
+            border-radius: 8px;
+            padding: 0 15px;
+            font-size: 14px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+        }
+
+        .search-btn {
+            display: inline-block;
+            background: var(--govt-red);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 28px;
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 10px;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(196, 30, 58, 0.3);
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .search-btn:hover {
+            background: var(--govt-red-dark);
+            transform: translateY(-1px);
+        }
+
+        /* Screen 5 - Details */
+        .screen-details {
+            background: white;
+            padding: 45px 18px 20px;
+            overflow-y: auto;
+        }
+
+        .details-row {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+
+        .details-row strong {
+            font-weight: 600;
+        }
+
+        .details-row .value-highlight {
+            font-weight: 700;
+            color: var(--govt-red);
+        }
+
+        .details-section {
+            margin-top: 15px;
+            padding-top: 10px;
+        }
+
+        .details-section-title {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .documents-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .doc-thumb {
+            aspect-ratio: 1;
+            background: linear-gradient(145deg, #4FC3F7, #29B6F6);
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(79, 195, 247, 0.4);
+        }
+
+        /* Bihar Sarkar Logo Component */
+        .bihar-sarkar-logo {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Tree Logo Component */
+        .tree-logo {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Footer */
+        .presentation-footer {
+            text-align: center;
+            padding: 30px 20px 40px;
+            background: var(--bg-presentation);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .presentation-footer p {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .screens-container {
+                justify-content: flex-start;
+                padding: 40px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="presentation-header">
+        <h1>Bihar Land Survey & Revenue</h1>
+        <p>Mobile Application — Screen Design Demo</p>
+        <span class="badge">5 Screens Preview</span>
+    </header>
+
+    <main class="screens-container">
+        <!-- Screen 1: App Launcher -->
+        <div class="phone-wrapper">
+            <div class="screen-label">1. App Launcher</div>
+            <div class="phone-frame">
+                <div class="phone-screen screen-launcher">
+                    <div>
+                        <div class="launcher-app-icon">
+                            <svg class="tree-logo" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="48" fill="white" stroke="#ddd" stroke-width="1"/>
+                                <!-- Tree trunk -->
+                                <rect x="46" y="60" width="8" height="20" fill="#333"/>
+                                <!-- Tree leaves -->
+                                <ellipse cx="50" cy="45" rx="25" ry="20" fill="none" stroke="#333" stroke-width="2"/>
+                                <line x1="50" y1="25" x2="50" y2="55" stroke="#333" stroke-width="2"/>
+                                <line x1="35" y1="35" x2="50" y2="45" stroke="#333" stroke-width="1.5"/>
+                                <line x1="65" y1="35" x2="50" y2="45" stroke="#333" stroke-width="1.5"/>
+                                <line x1="30" y1="45" x2="50" y2="50" stroke="#333" stroke-width="1.5"/>
+                                <line x1="70" y1="45" x2="50" y2="50" stroke="#333" stroke-width="1.5"/>
+                                <!-- Small leaves -->
+                                <ellipse cx="35" cy="32" rx="5" ry="3" fill="#333"/>
+                                <ellipse cx="65" cy="32" rx="5" ry="3" fill="#333"/>
+                                <ellipse cx="28" cy="42" rx="5" ry="3" fill="#333"/>
+                                <ellipse cx="72" cy="42" rx="5" ry="3" fill="#333"/>
+                            </svg>
+                        </div>
+                        <div class="launcher-app-name">Land And Revenue</div>
+                    </div>
+                    <div class="launcher-spacer"></div>
+                    <div class="launcher-dots">
+                        <div class="launcher-dot active"></div>
+                        <div class="launcher-dot"></div>
+                        <div class="launcher-dot"></div>
+                        <div class="launcher-dot"></div>
+                        <div class="launcher-dot"></div>
+                        <div class="launcher-dot"></div>
+                        <div class="launcher-dot"></div>
+                        <div class="launcher-dot"></div>
+                    </div>
+                    <div class="launcher-search">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <span>Search</span>
+                        <div class="launcher-search-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 2: Splash Screen -->
+        <div class="phone-wrapper">
+            <div class="screen-label">2. Splash Screen</div>
+            <div class="phone-frame">
+                <div class="phone-screen screen-splash">
+                    <div class="splash-bihar-logo">
+                        <svg viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#C41E3A" stroke-width="3"/>
+                            <!-- Simplified Bihar emblem -->
+                            <g transform="translate(25, 20) scale(0.5)">
+                                <rect x="35" y="70" width="30" height="30" fill="none" stroke="#C41E3A" stroke-width="3"/>
+                                <line x1="50" y1="30" x2="50" y2="70" stroke="#C41E3A" stroke-width="3"/>
+                                <ellipse cx="50" cy="30" rx="20" ry="15" fill="none" stroke="#C41E3A" stroke-width="2"/>
+                                <line x1="30" y1="40" x2="50" y2="50" stroke="#C41E3A" stroke-width="2"/>
+                                <line x1="70" y1="40" x2="50" y2="50" stroke="#C41E3A" stroke-width="2"/>
+                            </g>
+                            <text x="50" y="92" text-anchor="middle" font-family="Noto Sans Devanagari" font-size="10" fill="#C41E3A" font-weight="600">बिहार सरकार</text>
+                        </svg>
+                    </div>
+                    <div class="splash-main-logo">
+                        <div class="splash-logo-circle">
+                            <svg viewBox="0 0 200 200" class="splash-logo-text">
+                                <defs>
+                                    <path id="textCircleTop" d="M 30,100 A 70,70 0 0,1 170,100" fill="none"/>
+                                    <path id="textCircleBottom" d="M 170,100 A 70,70 0 0,1 30,100" fill="none"/>
+                                </defs>
+                                <text font-size="11" fill="#333" font-weight="500">
+                                    <textPath href="#textCircleTop" startOffset="50%" text-anchor="middle">
+                                        Department of Revenue and Land Reforms,
+                                    </textPath>
+                                </text>
+                                <text font-size="11" fill="#333" font-weight="500">
+                                    <textPath href="#textCircleBottom" startOffset="50%" text-anchor="middle">
+                                        Govt. Of Bihar
+                                    </textPath>
+                                </text>
+                                <!-- Central Tree Emblem -->
+                                <g transform="translate(60, 55)">
+                                    <!-- Base/Pot -->
+                                    <rect x="30" y="70" width="20" height="15" fill="none" stroke="#333" stroke-width="2"/>
+                                    <text x="40" y="82" text-anchor="middle" font-size="8" fill="#333">जहाँ</text>
+                                    <!-- Tree trunk -->
+                                    <rect x="37" y="45" width="6" height="25" fill="#333"/>
+                                    <!-- Tree branches/leaves -->
+                                    <line x1="40" y1="20" x2="40" y2="50" stroke="#333" stroke-width="2"/>
+                                    <line x1="25" y1="30" x2="40" y2="40" stroke="#333" stroke-width="1.5"/>
+                                    <line x1="55" y1="30" x2="40" y2="40" stroke="#333" stroke-width="1.5"/>
+                                    <line x1="20" y1="45" x2="40" y2="50" stroke="#333" stroke-width="1.5"/>
+                                    <line x1="60" y1="45" x2="40" y2="50" stroke="#333" stroke-width="1.5"/>
+                                    <!-- Leaves -->
+                                    <ellipse cx="25" cy="28" rx="8" ry="5" fill="none" stroke="#333" stroke-width="1"/>
+                                    <ellipse cx="55" cy="28" rx="8" ry="5" fill="none" stroke="#333" stroke-width="1"/>
+                                    <ellipse cx="18" cy="43" rx="8" ry="5" fill="none" stroke="#333" stroke-width="1"/>
+                                    <ellipse cx="62" cy="43" rx="8" ry="5" fill="none" stroke="#333" stroke-width="1"/>
+                                    <ellipse cx="40" cy="15" rx="8" ry="5" fill="none" stroke="#333" stroke-width="1"/>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="splash-nic-logo">
+                        <div class="nic-text">NIC</div>
+                        <div class="nic-hindi">राष्ट्रीय सूचना विज्ञान केंद्र</div>
+                        <div class="nic-english">National Informatics Centre</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 3: Home Screen -->
+        <div class="phone-wrapper">
+            <div class="screen-label">3. Home Screen</div>
+            <div class="phone-frame">
+                <div class="phone-screen screen-home">
+                    <div class="home-header">
+                        <div class="home-title">
+                            Government of Bihar<br>
+                            Department of Revenue and Land Reforms
+                        </div>
+                        <svg class="home-bihar-logo" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#C41E3A" stroke-width="2"/>
+                            <g transform="translate(25, 15) scale(0.5)">
+                                <rect x="35" y="70" width="30" height="30" fill="none" stroke="#C41E3A" stroke-width="3"/>
+                                <line x1="50" y1="25" x2="50" y2="70" stroke="#C41E3A" stroke-width="3"/>
+                                <ellipse cx="50" cy="25" rx="20" ry="12" fill="none" stroke="#C41E3A" stroke-width="2"/>
+                                <line x1="30" y1="35" x2="50" y2="45" stroke="#C41E3A" stroke-width="2"/>
+                                <line x1="70" y1="35" x2="50" y2="45" stroke="#C41E3A" stroke-width="2"/>
+                            </g>
+                            <text x="50" y="92" text-anchor="middle" font-family="Noto Sans Devanagari" font-size="9" fill="#C41E3A" font-weight="600">बिहार सरकार</text>
+                        </svg>
+                    </div>
+                    <div class="home-modules">
+                        <div class="module-btn">भू अभिलेख एवं परिमाप निदेशालय</div>
+                        <div class="module-btn">भू लगान</div>
+                        <div class="module-btn highlight">सर्वेक्षण स्थिति 2023</div>
+                        <div class="module-btn">जमाबंदी पंजी</div>
+                        <div class="module-btn">आम सूचना</div>
+                        <div class="module-btn">भू मानचित्र</div>
+                        <div class="module-btn">आधार / मोबाइल सीडिंग स्थिति</div>
+                        <div class="module-btn">सरकारी भूमि का दाखिल खारिज</div>
+                    </div>
+                    <div class="home-footer">
+                        <svg viewBox="0 0 100 100">
+                            <g transform="translate(25, 10) scale(0.5)">
+                                <rect x="35" y="70" width="30" height="25" fill="none" stroke="#C41E3A" stroke-width="2"/>
+                                <line x1="50" y1="20" x2="50" y2="70" stroke="#C41E3A" stroke-width="2"/>
+                                <ellipse cx="50" cy="20" rx="18" ry="10" fill="none" stroke="#C41E3A" stroke-width="1.5"/>
+                                <line x1="32" y1="30" x2="50" y2="40" stroke="#C41E3A" stroke-width="1.5"/>
+                                <line x1="68" y1="30" x2="50" y2="40" stroke="#C41E3A" stroke-width="1.5"/>
+                                <line x1="25" y1="45" x2="50" y2="52" stroke="#C41E3A" stroke-width="1.5"/>
+                                <line x1="75" y1="45" x2="50" y2="52" stroke="#C41E3A" stroke-width="1.5"/>
+                            </g>
+                        </svg>
+                        <div class="home-footer-text">बिहार भूमि</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 4: Search Screen -->
+        <div class="phone-wrapper">
+            <div class="screen-label">4. Search Screen</div>
+            <div class="phone-frame">
+                <div class="phone-screen screen-search">
+                    <div class="search-header">
+                        <svg viewBox="0 0 100 100">
+                            <g transform="translate(25, 10) scale(0.5)">
+                                <rect x="35" y="70" width="30" height="25" fill="none" stroke="#C41E3A" stroke-width="2"/>
+                                <line x1="50" y1="20" x2="50" y2="70" stroke="#C41E3A" stroke-width="2"/>
+                                <ellipse cx="50" cy="20" rx="18" ry="10" fill="none" stroke="#C41E3A" stroke-width="1.5"/>
+                                <line x1="32" y1="30" x2="50" y2="40" stroke="#C41E3A" stroke-width="1.5"/>
+                                <line x1="68" y1="30" x2="50" y2="40" stroke="#C41E3A" stroke-width="1.5"/>
+                            </g>
+                            <text x="50" y="85" text-anchor="middle" font-family="Noto Sans Devanagari" font-size="10" fill="#C41E3A" font-weight="600">बिहार भूमि</text>
+                        </svg>
+                        <div class="search-header-text">
+                            Government of Bihar<br>
+                            Department of Revenue and Land Reforms
+                        </div>
+                    </div>
+                    <div class="search-title">सर्वेक्षण स्थिति 2023</div>
+                    <div class="search-field">
+                        <label class="search-label">Mobile no.</label>
+                        <input type="text" class="search-input" placeholder="">
+                        <button class="search-btn">Search</button>
+                    </div>
+                    <div class="search-field">
+                        <label class="search-label">Aadhaar no.</label>
+                        <input type="text" class="search-input" placeholder="">
+                        <button class="search-btn">Search</button>
+                    </div>
+                    <div class="search-field">
+                        <label class="search-label">Uniq Id no.</label>
+                        <input type="text" class="search-input" placeholder="">
+                        <button class="search-btn">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 5: Property Details -->
+        <div class="phone-wrapper">
+            <div class="screen-label">5. Property Details</div>
+            <div class="phone-frame">
+                <div class="phone-screen screen-details">
+                    <div class="details-row"><strong>नाम:</strong> बिन्दु देवी</div>
+                    <div class="details-row"><strong>पिता / पति:</strong> श्री प्रमोद दास</div>
+                    <div class="details-row"><strong>लिंग:</strong> Female</div>
+                    <div class="details-row"><strong>फोन नंबर:</strong> 8877225966</div>
+                    <div class="details-row"><strong>आधार नंबर:</strong> 854211545950</div>
+                    <div class="details-row"><strong>प्लॉट नंबर:</strong> 3053 &nbsp; <span class="value-highlight">खाता : 129</span></div>
+                    <div class="details-row"><strong>ऐकर:</strong> –</div>
+                    <div class="details-row"><strong>डिसमिल:</strong> 86</div>
+
+                    <div class="details-section">
+                        <div class="details-section-title">चौहदी:</div>
+                        <div class="details-row"><strong>उत्तर:</strong> साहेब बहादुर</div>
+                        <div class="details-row"><strong>दक्षिण:</strong> राम सेवक राम</div>
+                        <div class="details-row"><strong>पूरब:</strong> सुनील दास</div>
+                        <div class="details-row"><strong>पश्चिम:</strong> ख.स -1502</div>
+                    </div>
+
+                    <div class="documents-grid">
+                        <div class="doc-thumb"></div>
+                        <div class="doc-thumb"></div>
+                        <div class="doc-thumb"></div>
+                        <div class="doc-thumb"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="presentation-footer">
+        <p>Bihar Land Survey & Revenue Mobile Application — Demo Presentation</p>
+    </footer>
+</body>
+</html>

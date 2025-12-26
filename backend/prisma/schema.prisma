@@ -1,0 +1,114 @@
+// Prisma Schema for Bihar Land Survey & Revenue Application
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Admin user for authentication
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+// Person (Land Owner) - identified by unique Aadhaar
+model Person {
+  id         String   @id @default(cuid())
+  name       String   // नाम
+  fatherName String   // पिता / पति का नाम
+  gender     String   // लिंग (Male/Female/Other)
+  phone      String   // फोन नंबर
+  aadhaar    String   @unique // आधार नंबर (12 digits)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // One person can own multiple properties
+  properties LandProperty[]
+
+  @@index([phone])
+  @@index([aadhaar])
+  @@map("persons")
+}
+
+// Land Property with unique Property ID
+model LandProperty {
+  id               String   @id @default(cuid())
+  propertyUniqueId String   @unique // BH2023-PAT-00001 format
+
+  // Plot Details
+  plotNo           String   // प्लॉट नंबर
+  khataNo          String   // खाता नंबर
+  area             Float?   // Total area
+  areaUnit         String   @default("decimal") // acre, decimal, hectare
+  acres            Float?   // ऐकर
+  decimals         Float?   // डिसमिल
+
+  // Location
+  district         String   // जिला
+  village          String?  // गांव
+  thana            String?  // थाना
+
+  // Boundaries (चौहदी)
+  northBoundary    String?  // उत्तर
+  southBoundary    String?  // दक्षिण
+  eastBoundary     String?  // पूरब
+  westBoundary     String?  // पश्चिम
+
+  // Status
+  surveyStatus     String   @default("pending") // pending, completed, verified
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relationships
+  ownerId          String
+  owner            Person   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  documents        Document[]
+
+  @@index([propertyUniqueId])
+  @@index([plotNo, khataNo])
+  @@index([district])
+  @@index([ownerId])
+  @@map("land_properties")
+}
+
+// Document attached to property (5-7 per property)
+model Document {
+  id           String   @id @default(cuid())
+  fileName     String   // Original file name
+  filePath     String   // Storage path
+  fileType     String   // pdf, jpg, jpeg, png
+  fileSize     Int      // Size in bytes
+  description  String?  // Optional description
+  uploadedAt   DateTime @default(now())
+
+  // Relationship
+  propertyId   String
+  property     LandProperty @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@map("documents")
+}
+
+// Import Log for tracking CSV/Excel imports
+model ImportLog {
+  id           String   @id @default(cuid())
+  fileName     String
+  totalRows    Int
+  successCount Int
+  failedCount  Int
+  errors       Json?    // Array of error messages
+  importedBy   String?  // Admin username
+  importedAt   DateTime @default(now())
+
+  @@map("import_logs")
+}
