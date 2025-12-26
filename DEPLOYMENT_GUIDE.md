@@ -2,7 +2,9 @@
 
 This guide walks you through deploying the Bihar Land Survey application to Render.com's free tier.
 
----
+r primary URL https://bihar-land-api.onrender.com
+==> 
+==> Available at your primary URL https://bihar-land-api.onrender.com
 
 ## Prerequisites
 
