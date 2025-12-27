@@ -12,7 +12,14 @@
       "Bash(netstat:*)",
       "Bash(tasklist:*)",
       "Bash(taskkill //F //PID 8908)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(unzip:*)",
+      "Bash(export PATH=\"$PATH:/c/flutter/flutter/bin\")",
+      "Bash(flutter --version:*)",
+      "Bash(flutter doctor:*)",
+      "Bash(flutter pub get:*)",
+      "Bash(flutter create:*)",
+      "Bash(flutter run:*)"
     ]
   }
 }

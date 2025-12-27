@@ -10,11 +10,11 @@ const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
 const app = express();
 
-// CORS configuration
+// CORS configuration - Allow all origins in development
 app.use(cors({
   origin: config.nodeEnv === 'production'
-    ? ['https://bihar-land-admin.onrender.com']
-    : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:3001', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'],
+    ? ['https://bihar-land-admin.onrender.com', 'https://bihar-land-app.onrender.com']
+    : true, // Allow all origins in development
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
