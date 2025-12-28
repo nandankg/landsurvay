@@ -31,6 +31,11 @@ export const documentService = {
   getDownloadUrl: (id) => {
     const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
     return `${baseUrl}/documents/${id}/download`
+  },
+
+  getViewUrl: (id) => {
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+    return `${baseUrl}/documents/${id}/view`
   }
 }
 

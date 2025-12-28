@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Card, Row, Col, Typography, Tag, Button, Space, Descriptions, message, Upload, Image, Empty, Spin, Popconfirm } from 'antd'
-import { ArrowLeftOutlined, EditOutlined, UploadOutlined, DeleteOutlined, FileOutlined, FilePdfOutlined } from '@ant-design/icons'
+import { Card, Row, Col, Typography, Tag, Button, Space, Descriptions, message, Upload, Image, Empty, Spin, Popconfirm, Modal, Input } from 'antd'
+import { ArrowLeftOutlined, EditOutlined, UploadOutlined, DeleteOutlined, FileOutlined, FilePdfOutlined, EyeOutlined, LockOutlined } from '@ant-design/icons'
 import { useNavigate, useParams } from 'react-router-dom'
 import propertyService from '../../services/property.service'
 import documentService from '../../services/document.service'
 import { formatDate, formatFileSize } from '../../utils/formatters'
+import '../Public/public.css'
 
 const { Title, Text } = Typography
 
@@ -14,6 +15,15 @@ const PropertyDetail = () => {
   const [loading, setLoading] = useState(true)
   const [property, setProperty] = useState(null)
   const [uploading, setUploading] = useState(false)
+
+  // Secure document preview state
+  const [previewVisible, setPreviewVisible] = useState(false)
+  const [previewDoc, setPreviewDoc] = useState(null)
+  const [passcodeModalVisible, setPasscodeModalVisible] = useState(false)
+  const [passcodeInput, setPasscodeInput] = useState('')
+  const [passcodeError, setPasscodeError] = useState('')
+  const [pendingDoc, setPendingDoc] = useState(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
     fetchProperty()
@@ -54,6 +64,63 @@ const PropertyDetail = () => {
       fetchProperty()
     } catch (error) {
       message.error('Failed to delete document')
+    }
+  }
+
+  // Secure document preview handlers
+  const handleDocumentPreview = (doc) => {
+    if (isAuthenticated) {
+      const viewUrl = documentService.getViewUrl(doc.id)
+      setPreviewDoc({ ...doc, viewUrl })
+      setPreviewVisible(true)
+    } else {
+      setPendingDoc(doc)
+      setPasscodeInput('')
+      setPasscodeError('')
+      setPasscodeModalVisible(true)
+    }
+  }
+
+  const handlePasscodeSubmit = () => {
+    const correctPasscode = property?.propertyUniqueId || ''
+
+    if (passcodeInput === correctPasscode) {
+      setIsAuthenticated(true)
+      setPasscodeModalVisible(false)
+      setPasscodeError('')
+
+      if (pendingDoc) {
+        const viewUrl = documentService.getViewUrl(pendingDoc.id)
+        setPreviewDoc({ ...pendingDoc, viewUrl })
+        setPreviewVisible(true)
+        setPendingDoc(null)
+      }
+    } else {
+      setPasscodeError('Incorrect passcode / गलत पासकोड')
+    }
+  }
+
+  const handlePasscodeCancel = () => {
+    setPasscodeModalVisible(false)
+    setPasscodeInput('')
+    setPasscodeError('')
+    setPendingDoc(null)
+  }
+
+  const handleContextMenu = (e) => {
+    e.preventDefault()
+    return false
+  }
+
+  const handleKeyDown = (e) => {
+    if (
+      (e.ctrlKey && ['s', 'S', 'p', 'P', 'c', 'C'].includes(e.key)) ||
+      (e.metaKey && ['s', 'S', 'p', 'P', 'c', 'C'].includes(e.key)) ||
+      e.key === 'PrintScreen'
+    ) {
+      e.preventDefault()
+      message.warning('Document copying/saving is disabled')
+      return false
     }
   }
 
@@ -224,14 +291,15 @@ const PropertyDetail = () => {
                         )
                       }
                       actions={[
-                        <a
-                          href={documentService.getDownloadUrl(doc.id)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          key="download"
+                        <Button
+                          type="link"
+                          icon={<EyeOutlined />}
+                          onClick={() => handleDocumentPreview(doc)}
+                          key="preview"
+                          size="small"
                         >
-                          Download
-                        </a>,
+                          View
+                        </Button>,
                         <Popconfirm
                           title="Delete this document?"
                           onConfirm={() => handleDeleteDocument(doc.id)}
@@ -255,6 +323,136 @@ const PropertyDetail = () => {
           </Card>
         </Col>
       </Row>
+
+      {/* Passcode Modal */}
+      <Modal
+        open={passcodeModalVisible}
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <LockOutlined style={{ color: '#faad14' }} />
+            <span>Document Passcode / दस्तावेज़ पासकोड</span>
+          </div>
+        }
+        footer={
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+            <Button onClick={handlePasscodeCancel}>Cancel</Button>
+            <Button type="primary" onClick={handlePasscodeSubmit}>View Document</Button>
+          </div>
+        }
+        onCancel={handlePasscodeCancel}
+        width={400}
+        centered
+      >
+        <div style={{ padding: '16px 0' }}>
+          <p style={{ marginBottom: 16, color: '#666' }}>
+            Enter passcode to view document / दस्तावेज़ देखने के लिए पासकोड दर्ज करें
+          </p>
+          <Input.Password
+            prefix={<LockOutlined />}
+            placeholder="Enter passcode"
+            value={passcodeInput}
+            onChange={(e) => setPasscodeInput(e.target.value)}
+            onPressEnter={handlePasscodeSubmit}
+            status={passcodeError ? 'error' : ''}
+          />
+          {passcodeError && (
+            <p style={{ color: '#ff4d4f', marginTop: 8, marginBottom: 0 }}>
+              {passcodeError}
+            </p>
+          )}
+          <p style={{ marginTop: 12, fontSize: 12, color: '#999' }}>
+            Hint: Passcode is the Property ID / संकेत: पासकोड प्रॉपर्टी ID है
+          </p>
+        </div>
+      </Modal>
+
+      {/* Secure Document Preview Modal */}
+      <Modal
+        open={previewVisible}
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {previewDoc?.fileType === 'pdf' ? (
+              <FilePdfOutlined style={{ color: '#ff4d4f' }} />
+            ) : (
+              <FileOutlined style={{ color: '#1890ff' }} />
+            )}
+            <span>{previewDoc?.fileName || 'Document Preview'}</span>
+            <LockOutlined style={{ color: '#52c41a', marginLeft: 'auto', fontSize: 14 }} title="Secured Document" />
+          </div>
+        }
+        footer={
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ color: '#666', fontSize: 12 }}>
+              🔒 {previewDoc?.fileType?.toUpperCase()} Document - View Only
+            </span>
+            <Button type="primary" onClick={() => setPreviewVisible(false)}>
+              Close
+            </Button>
+          </div>
+        }
+        onCancel={() => setPreviewVisible(false)}
+        width={900}
+        centered
+        bodyStyle={{ padding: 0, maxHeight: '70vh', overflow: 'auto' }}
+        className="secure-document-modal admin-document-preview-modal"
+      >
+        {previewDoc && (
+          <div
+            className="document-preview-container secure-preview admin-secure-preview"
+            onContextMenu={handleContextMenu}
+            onKeyDown={handleKeyDown}
+            tabIndex={0}
+          >
+            {/* Watermark overlay */}
+            <div className="document-watermark">
+              <span>{property?.propertyUniqueId}</span>
+              <span>{property?.propertyUniqueId}</span>
+              <span>{property?.propertyUniqueId}</span>
+              <span>{property?.propertyUniqueId}</span>
+              <span>{property?.propertyUniqueId}</span>
+              <span>{property?.propertyUniqueId}</span>
+            </div>
+
+            {previewDoc.fileType === 'pdf' ? (
+              <iframe
+                src={`${previewDoc.viewUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`}
+                style={{
+                  width: '100%',
+                  height: '70vh',
+                  border: 'none'
+                }}
+                title="PDF Preview"
+                sandbox="allow-same-origin allow-scripts"
+              />
+            ) : (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: 16,
+                background: '#f5f5f5',
+                minHeight: '50vh'
+              }}>
+                <img
+                  src={previewDoc.viewUrl}
+                  alt={previewDoc.fileName || 'Document'}
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '65vh',
+                    objectFit: 'contain',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                    borderRadius: 4,
+                    userSelect: 'none',
+                    pointerEvents: 'none'
+                  }}
+                  draggable={false}
+                  onDragStart={(e) => e.preventDefault()}
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }

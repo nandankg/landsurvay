@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
-import { message, Modal, Button } from 'antd'
+import { message, Modal, Button, Input } from 'antd'
 import {
   ArrowLeftOutlined,
   UserOutlined,
@@ -10,8 +10,7 @@ import {
   FilePdfOutlined,
   FileImageOutlined,
   ExclamationCircleOutlined,
-  DownloadOutlined,
-  EyeOutlined,
+  LockOutlined,
   CloseOutlined
 } from '@ant-design/icons'
 import publicService from '../../services/public.service'
@@ -31,6 +30,13 @@ const PropertyDetailPage = () => {
   const [error, setError] = useState(null)
   const [previewVisible, setPreviewVisible] = useState(false)
   const [previewDoc, setPreviewDoc] = useState(null)
+
+  // Passcode protection state
+  const [passcodeModalVisible, setPasscodeModalVisible] = useState(false)
+  const [passcodeInput, setPasscodeInput] = useState('')
+  const [passcodeError, setPasscodeError] = useState('')
+  const [pendingDoc, setPendingDoc] = useState(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
     if (!passedData?.property && id) {
@@ -76,15 +82,64 @@ const PropertyDetailPage = () => {
   }
 
   const handleDocumentClick = (doc) => {
-    const viewUrl = publicService.getDocumentViewUrl(doc.id)
-    const downloadUrl = publicService.getDocumentDownloadUrl(doc.id)
-    setPreviewDoc({ ...doc, viewUrl, downloadUrl })
-    setPreviewVisible(true)
+    // If already authenticated for this session, show document directly
+    if (isAuthenticated) {
+      const viewUrl = publicService.getDocumentViewUrl(doc.id)
+      setPreviewDoc({ ...doc, viewUrl })
+      setPreviewVisible(true)
+    } else {
+      // Show passcode modal
+      setPendingDoc(doc)
+      setPasscodeInput('')
+      setPasscodeError('')
+      setPasscodeModalVisible(true)
+    }
   }
 
-  const handleDownload = () => {
-    if (previewDoc?.downloadUrl) {
-      window.open(previewDoc.downloadUrl, '_blank')
+  const handlePasscodeSubmit = () => {
+    // Default passcode is the property unique ID
+    const correctPasscode = property?.propertyUniqueId || ''
+
+    if (passcodeInput === correctPasscode) {
+      setIsAuthenticated(true)
+      setPasscodeModalVisible(false)
+      setPasscodeError('')
+
+      // Open the pending document
+      if (pendingDoc) {
+        const viewUrl = publicService.getDocumentViewUrl(pendingDoc.id)
+        setPreviewDoc({ ...pendingDoc, viewUrl })
+        setPreviewVisible(true)
+        setPendingDoc(null)
+      }
+    } else {
+      setPasscodeError('गलत पासकोड / Incorrect passcode')
+    }
+  }
+
+  const handlePasscodeCancel = () => {
+    setPasscodeModalVisible(false)
+    setPasscodeInput('')
+    setPasscodeError('')
+    setPendingDoc(null)
+  }
+
+  // Prevent context menu (right-click)
+  const handleContextMenu = (e) => {
+    e.preventDefault()
+    return false
+  }
+
+  // Prevent keyboard shortcuts for copying/saving
+  const handleKeyDown = (e) => {
+    if (
+      (e.ctrlKey && (e.key === 's' || e.key === 'S' || e.key === 'p' || e.key === 'P' || e.key === 'c' || e.key === 'C')) ||
+      (e.metaKey && (e.key === 's' || e.key === 'S' || e.key === 'p' || e.key === 'P' || e.key === 'c' || e.key === 'C')) ||
+      e.key === 'PrintScreen'
+    ) {
+      e.preventDefault()
+      message.warning('दस्तावेज़ को कॉपी या सेव करना अक्षम है / Document copying/saving is disabled')
+      return false
     }
   }
 
@@ -283,7 +338,53 @@ const PropertyDetailPage = () => {
         </div>
       </div>
 
-      {/* Document Preview Modal */}
+      {/* Passcode Modal */}
+      <Modal
+        open={passcodeModalVisible}
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <LockOutlined style={{ color: '#faad14' }} />
+            <span>दस्तावेज़ पासकोड / Document Passcode</span>
+          </div>
+        }
+        footer={
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+            <Button onClick={handlePasscodeCancel}>
+              रद्द करें / Cancel
+            </Button>
+            <Button type="primary" onClick={handlePasscodeSubmit}>
+              देखें / View
+            </Button>
+          </div>
+        }
+        onCancel={handlePasscodeCancel}
+        width={400}
+        centered
+      >
+        <div style={{ padding: '16px 0' }}>
+          <p style={{ marginBottom: 16, color: '#666' }}>
+            दस्तावेज़ देखने के लिए पासकोड दर्ज करें / Enter passcode to view document
+          </p>
+          <Input.Password
+            prefix={<LockOutlined />}
+            placeholder="पासकोड दर्ज करें / Enter passcode"
+            value={passcodeInput}
+            onChange={(e) => setPasscodeInput(e.target.value)}
+            onPressEnter={handlePasscodeSubmit}
+            status={passcodeError ? 'error' : ''}
+          />
+          {passcodeError && (
+            <p style={{ color: '#ff4d4f', marginTop: 8, marginBottom: 0 }}>
+              {passcodeError}
+            </p>
+          )}
+          <p style={{ marginTop: 12, fontSize: 12, color: '#999' }}>
+            संकेत: पासकोड प्रॉपर्टी ID है / Hint: Passcode is the Property ID
+          </p>
+        </div>
+      </Modal>
+
+      {/* Document Preview Modal - Secured */}
       <Modal
         open={previewVisible}
         title={
@@ -294,45 +395,56 @@ const PropertyDetailPage = () => {
               <FileImageOutlined style={{ color: '#3498db' }} />
             )}
             <span>{previewDoc?.description || previewDoc?.originalName || 'Document Preview'}</span>
+            <LockOutlined style={{ color: '#52c41a', marginLeft: 'auto', fontSize: 14 }} title="Secured Document" />
           </div>
         }
         footer={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ color: '#666', fontSize: 12 }}>
-              {previewDoc?.fileType?.toUpperCase()} Document
+              🔒 {previewDoc?.fileType?.toUpperCase()} Document - View Only
             </span>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <Button
-                icon={<DownloadOutlined />}
-                onClick={handleDownload}
-              >
-                Download / डाउनलोड
-              </Button>
-              <Button
-                type="primary"
-                onClick={() => setPreviewVisible(false)}
-              >
-                Close / बंद करें
-              </Button>
-            </div>
+            <Button
+              type="primary"
+              onClick={() => setPreviewVisible(false)}
+            >
+              Close / बंद करें
+            </Button>
           </div>
         }
         onCancel={() => setPreviewVisible(false)}
         width={900}
         centered
         bodyStyle={{ padding: 0, maxHeight: '70vh', overflow: 'auto' }}
+        className="secure-document-modal"
       >
         {previewDoc && (
-          <div className="document-preview-container">
+          <div
+            className="document-preview-container secure-preview"
+            onContextMenu={handleContextMenu}
+            onKeyDown={handleKeyDown}
+            tabIndex={0}
+          >
+            {/* Watermark overlay to discourage screenshots */}
+            <div className="document-watermark">
+              <span>{property?.propertyUniqueId}</span>
+              <span>{property?.propertyUniqueId}</span>
+              <span>{property?.propertyUniqueId}</span>
+              <span>{property?.propertyUniqueId}</span>
+              <span>{property?.propertyUniqueId}</span>
+              <span>{property?.propertyUniqueId}</span>
+            </div>
+
             {previewDoc.fileType === 'pdf' ? (
               <iframe
-                src={`${previewDoc.viewUrl}#toolbar=1&navpanes=0`}
+                src={`${previewDoc.viewUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`}
                 style={{
                   width: '100%',
                   height: '70vh',
-                  border: 'none'
+                  border: 'none',
+                  pointerEvents: 'auto'
                 }}
                 title="PDF Preview"
+                sandbox="allow-same-origin allow-scripts"
               />
             ) : (
               <div style={{
@@ -341,7 +453,8 @@ const PropertyDetailPage = () => {
                 alignItems: 'center',
                 padding: 16,
                 background: '#f5f5f5',
-                minHeight: '50vh'
+                minHeight: '50vh',
+                position: 'relative'
               }}>
                 <img
                   src={previewDoc.viewUrl}
@@ -351,8 +464,12 @@ const PropertyDetailPage = () => {
                     maxHeight: '65vh',
                     objectFit: 'contain',
                     boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                    borderRadius: 4
+                    borderRadius: 4,
+                    userSelect: 'none',
+                    pointerEvents: 'none'
                   }}
+                  draggable={false}
+                  onDragStart={(e) => e.preventDefault()}
                 />
               </div>
             )}
