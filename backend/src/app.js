@@ -10,20 +10,31 @@ const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
 const app = express();
 
-// CORS configuration - Allow specific origins
+// CORS configuration - Allow specific origins + localhost for development
 const allowedOrigins = [
   'https://bihar-land-admin.onrender.com',
-  'https://bihar-land-app.onrender.com',
-  'http://localhost:5173',  // Local admin development
-  'http://localhost:3001',  // Alternative local admin port
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:3001'
+  'https://bihar-land-app.onrender.com'
 ];
 
+// Function to check if origin is allowed
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true; // Allow requests with no origin (mobile apps, Postman)
+  if (allowedOrigins.includes(origin)) return true;
+  // Allow any localhost/127.0.0.1 origin (for local development)
+  if (origin.match(/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/)) return true;
+  return false;
+};
+
 app.use(cors({
-  origin: config.nodeEnv === 'production'
-    ? allowedOrigins
-    : true, // Allow all origins in development
+  origin: (origin, callback) => {
+    if (config.nodeEnv !== 'production') {
+      callback(null, true); // Allow all in development
+    } else if (isAllowedOrigin(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
