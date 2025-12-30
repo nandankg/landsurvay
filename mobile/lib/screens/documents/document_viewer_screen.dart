@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import '../../config/app_theme.dart';
 import '../../models/models.dart';
 import '../../services/api_service.dart';
@@ -67,12 +66,15 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> with Widget
     super.dispose();
   }
 
+  // Method channel for native screenshot prevention
+  static const _secureChannel = MethodChannel('com.bihar.land/secure');
+
   /// Enable FLAG_SECURE on Android to prevent screenshots
   Future<void> _enableSecureMode() async {
-    // Use flutter_windowmanager for Android screenshot prevention
+    // Use method channel for Android screenshot prevention
     if (!kIsWeb && Platform.isAndroid) {
       try {
-        await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+        await _secureChannel.invokeMethod('enableSecureMode');
       } catch (e) {
         debugPrint('Failed to enable secure mode: $e');
       }
@@ -86,7 +88,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> with Widget
     // Remove FLAG_SECURE when leaving document viewer
     if (!kIsWeb && Platform.isAndroid) {
       try {
-        await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+        await _secureChannel.invokeMethod('disableSecureMode');
       } catch (e) {
         debugPrint('Failed to disable secure mode: $e');
       }

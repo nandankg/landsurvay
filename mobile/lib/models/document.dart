@@ -62,7 +62,7 @@ class PropertyDocument {
   /// Returns display name for the document
   String get displayName {
     if (description != null && description!.isNotEmpty) return description!;
-    if (originalName.isNotEmpty) return originalName;
+    if (originalName != null && originalName!.isNotEmpty) return originalName!;
     if (fileName.isNotEmpty) return fileName;
     return 'Document';
   }

@@ -39,16 +39,22 @@ const Login = () => {
         bordered={false}
       >
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <svg width="60" height="60" viewBox="0 0 100 100" style={{ marginBottom: 16 }}>
-            <rect width="100" height="100" rx="20" fill="#C41E3A"/>
-            <g fill="white" transform="translate(20, 15) scale(0.6)">
-              <rect x="35" y="70" width="30" height="25" fill="none" stroke="white" strokeWidth="4"/>
-              <line x1="50" y1="20" x2="50" y2="70" stroke="white" strokeWidth="4"/>
-              <ellipse cx="50" cy="20" rx="20" ry="12" fill="none" stroke="white" strokeWidth="3"/>
-              <line x1="30" y1="35" x2="50" y2="45" stroke="white" strokeWidth="3"/>
-              <line x1="70" y1="35" x2="50" y2="45" stroke="white" strokeWidth="3"/>
-            </g>
-          </svg>
+          {/* Login Logo - Replace /logos/app_logo.svg or app_logo.png to change */}
+          <img
+            src="/logos/app_logo.svg"
+            alt="Bihar Land"
+            style={{
+              width: 70,
+              height: 70,
+              marginBottom: 16,
+              objectFit: 'contain'
+            }}
+            onError={(e) => {
+              // Fallback to PNG if SVG not found
+              e.target.onerror = null
+              e.target.src = '/logos/bihar_govt_logo.png'
+            }}
+          />
           <Title level={3} style={{ marginBottom: 4 }}>Bihar Land Admin</Title>
           <Text type="secondary">Sign in to your account</Text>
         </div>

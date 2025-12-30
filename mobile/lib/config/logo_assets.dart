@@ -33,7 +33,7 @@ class LogoAssets {
 
   /// Bihar Bhumi App Logo (Bodhi Tree)
   /// Replace with: Official Bihar Bhumi logo
-  static const String appLogo = '${_basePath}app_logo.svg';
+  static const String appLogo = '${_basePath}bihar_govt_logo.png';
 
   /// List of all logo assets (for preloading)
   static const List<String> allLogos = [

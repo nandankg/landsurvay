@@ -92,13 +92,20 @@ const DashboardLayout = () => {
           borderBottom: '1px solid #f0f0f0'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <svg width="32" height="32" viewBox="0 0 100 100">
-              <rect width="100" height="100" rx="20" fill="#C41E3A"/>
-              <g fill="white" transform="translate(20, 15) scale(0.6)">
-                <rect x="35" y="70" width="30" height="25" fill="none" stroke="white" strokeWidth="4"/>
-                <line x1="50" y1="20" x2="50" y2="70" stroke="white" strokeWidth="4"/>
-              </g>
-            </svg>
+            {/* Sidebar Logo - Replace /logos/app_logo.svg or app_logo.png to change */}
+            <img
+              src="/logos/app_logo.svg"
+              alt="Bihar Land"
+              style={{
+                width: 36,
+                height: 36,
+                objectFit: 'contain'
+              }}
+              onError={(e) => {
+                e.target.onerror = null
+                e.target.src = '/logos/bihar_govt_logo.png'
+              }}
+            />
             {!collapsed && (
               <Text strong style={{ fontSize: 16, color: '#C41E3A' }}>
                 Bihar Land

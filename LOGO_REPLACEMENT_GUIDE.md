@@ -82,9 +82,13 @@ FooterLogos(logoSize: 35)   // For footers
 ```
 admin/public/logos/
 ├── bihar_govt_logo.svg    # Bihar Government Logo
+├── bihar_govt_logo.png    # Bihar Government Logo (PNG)
 ├── nic_logo.svg           # NIC Logo
+├── nic_logo.png           # NIC Logo (PNG)
 ├── revenue_dept_logo.svg  # Revenue Department Logo
-└── app_logo.svg           # Bihar Bhumi App Logo
+├── revenue_dept_logo.png  # Revenue Department Logo (PNG)
+├── app_logo.svg           # Bihar Bhumi App Logo (Login + Sidebar)
+└── admin_logo.png         # Admin Logo (Alternative for Login/Dashboard)
 ```
 
 ### How to Replace
@@ -103,6 +107,80 @@ admin/public/logos/
    npm run dev   # For development
    npm run build # For production
    ```
+
+---
+
+## Admin Login Page & Dashboard Logo
+
+The admin login page and dashboard sidebar show the app logo. These are defined in:
+
+### Files to Update
+| Location | File | Description |
+|----------|------|-------------|
+| Login Page | `admin/src/pages/Login.jsx` | Logo shown on login card |
+| Dashboard Sidebar | `admin/src/layouts/DashboardLayout.jsx` | Logo in sidebar header |
+
+### How to Change Admin Login & Dashboard Logo
+
+**Step 1:** Prepare your new logo file (SVG or PNG recommended)
+
+**Step 2:** Replace the file at:
+```
+admin/public/logos/app_logo.svg
+```
+Or add a PNG version:
+```
+admin/public/logos/app_logo.png
+```
+
+**Step 3:** Restart the admin dev server:
+```bash
+cd admin
+npm run dev
+```
+
+### Current Logo Files Used
+
+| Location | Primary File | Fallback |
+|----------|--------------|----------|
+| Login Page | `/logos/app_logo.svg` | `/logos/bihar_govt_logo.png` |
+| Dashboard Sidebar | `/logos/app_logo.svg` | `/logos/bihar_govt_logo.png` |
+
+### Source Code Locations
+
+The logo is used in these files:
+- **Login Page:** `admin/src/pages/Login.jsx` (line 44)
+- **Dashboard Sidebar:** `admin/src/layouts/DashboardLayout.jsx` (line 97)
+
+### Example: Using a Custom PNG Logo
+
+To use a custom PNG logo instead of SVG:
+
+1. Save your logo as `admin/public/logos/app_logo.png`
+2. Edit `admin/src/pages/Login.jsx`:
+```jsx
+<img
+  src="/logos/app_logo.png"  // ← Change to PNG
+  alt="Bihar Land"
+  ...
+/>
+```
+
+3. Edit `admin/src/layouts/DashboardLayout.jsx`:
+```jsx
+<img
+  src="/logos/app_logo.png"  // ← Change to PNG
+  alt="Bihar Land"
+  ...
+/>
+```
+
+### Logo Styling
+
+The logo is displayed with:
+- Clean, borderless design
+- Auto-scaling to fit container
+- Transparent background support
 
 ### Configuration File
 The logo paths are defined in:
