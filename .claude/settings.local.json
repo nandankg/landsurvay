@@ -19,7 +19,20 @@
       "Bash(flutter doctor:*)",
       "Bash(flutter pub get:*)",
       "Bash(flutter create:*)",
-      "Bash(flutter run:*)"
+      "Bash(flutter run:*)",
+      "Bash(setx PATH \"%PATH%;C:\\\\flutter\\\\bin\")",
+      "Bash(flutter clean:*)",
+      "Bash(export GRADLE_USER_HOME=\"D:/gradle_home\")",
+      "Bash(flutter build:*)",
+      "Bash(export JAVA_HOME=\"/c/Program Files/Microsoft/jdk-17.0.14+7\")",
+      "Bash(./gradlew:*)",
+      "Bash(java -version:*)",
+      "Bash(echo:*)",
+      "Bash(\"C:/AndroidStudio/jbr/bin/java.exe\" -version)",
+      "Bash(cat:*)",
+      "Bash(\"C:/AndroidStudio/jbr/bin/jlink.exe\" --version)",
+      "Bash(\"C:/AndroidStudio/jbr/bin/jlink.exe\" --module-path D:/gradle_home/caches/transforms-3/77c90ebb1a40e9b86401e7162cee1f61/transformed/output/temp/jmod --add-modules java.base --output D:/gradle_home/caches/transforms-3/test-output --disable-plugin system-modules)",
+      "WebFetch(domain:bihar-land-api.onrender.com)"
     ]
   }
 }

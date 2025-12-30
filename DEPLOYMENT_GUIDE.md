@@ -246,6 +246,91 @@ Same process - push to GitHub, Render auto-deploys.
 
 ---
 
+## Database Schema Updates on Render
+
+When you make changes to the Prisma schema (like adding new fields), follow these steps:
+
+### Step 1: Push Code Changes to GitHub
+
+```bash
+cd D:\land
+git add .
+git commit -m "Update: Add document naming convention with sequenceNo"
+git push origin main
+```
+
+### Step 2: Apply Database Migration on Render
+
+1. Go to https://dashboard.render.com
+2. Click on **bihar-land-api** service
+3. Click **Shell** tab (or go to Manual Shell)
+4. Run the following commands:
+
+```bash
+# Generate Prisma client with new schema
+npx prisma generate
+
+# Push schema changes to database (for development/simple changes)
+npx prisma db push
+
+# OR use migrations for production (recommended)
+npx prisma migrate deploy
+```
+
+### Step 3: Verify Changes
+
+```bash
+# Check if schema is updated
+npx prisma studio
+```
+
+---
+
+## Document Naming Convention Update
+
+The document naming has been updated to use Property ID + sequence number format:
+- **Format**: `{PropertyUniqueId}-{SequenceNo}.{extension}`
+- **Example**: `BH2023-PAT-00001-1.pdf`, `BH2023-PAT-00001-2.jpg`
+
+### Apply Document Naming Changes on Render
+
+1. **Push code to GitHub**:
+   ```bash
+   git add .
+   git commit -m "Update: Document naming with PropertyID-SequenceNo format"
+   git push origin main
+   ```
+
+2. **Wait for auto-deploy** (Render will automatically rebuild)
+
+3. **Open Render Shell** and run:
+   ```bash
+   # Apply schema changes (adds originalName, sequenceNo fields)
+   npx prisma db push
+
+   # Verify the schema update
+   npx prisma studio
+   ```
+
+4. **Test document upload** in Admin Portal:
+   - Upload a document to any property
+   - Verify filename is: `BH2023-XXX-XXXXX-1.pdf`
+
+### Schema Changes Applied
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `originalName` | String? | Original uploaded filename |
+| `sequenceNo` | Int | Sequence number (1-7) |
+
+### Note on Existing Documents
+
+- Existing documents retain their old filenames
+- New uploads will use the new naming convention
+- No data migration required for existing documents
+
+---
+
 ## Production Considerations
 
 For production use beyond free tier:

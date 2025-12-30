@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
 import '../../models/models.dart';
 import '../../services/api_service.dart';
+import '../../widgets/document_password_dialog.dart';
 
 /// Property Detail Screen - Shows complete property information
 class PropertyDetailScreen extends StatefulWidget {
@@ -406,12 +407,33 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
     );
   }
 
-  void _openDocument(int index) {
-    context.push('/document/${_documents[index].id}', extra: {
-      'document': _documents[index],
-      'documents': _documents,
-      'initialIndex': index,
-    });
+  void _openDocument(int index) async {
+    final propertyUniqueId = _property?.propertyUniqueId ?? '';
+
+    if (propertyUniqueId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Property ID not found'),
+          backgroundColor: AppTheme.primaryRed,
+        ),
+      );
+      return;
+    }
+
+    // Show password dialog before opening document
+    final authorized = await DocumentPasswordDialog.show(
+      context: context,
+      propertyUniqueId: propertyUniqueId,
+    );
+
+    if (authorized && mounted) {
+      context.push('/document/${_documents[index].id}', extra: {
+        'document': _documents[index],
+        'documents': _documents,
+        'initialIndex': index,
+        'propertyUniqueId': propertyUniqueId,
+      });
+    }
   }
 }
 

@@ -16,15 +16,20 @@ const prisma = new PrismaClient();
 /**
  * Upload documents for a property
  * POST /api/admin/properties/:id/documents
+ * Documents are named: {PropertyUniqueId}-{SequenceNo}.{ext}
+ * Example: BH2023-PAT-00001-1.pdf, BH2023-PAT-00001-2.jpg
  */
 const uploadDocuments = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  // Check if property exists
+  // Check if property exists and get propertyUniqueId
   const property = await prisma.landProperty.findUnique({
     where: { id },
     include: {
-      _count: { select: { documents: true } }
+      documents: {
+        select: { sequenceNo: true },
+        orderBy: { sequenceNo: 'desc' }
+      }
     }
   });
 
@@ -33,10 +38,15 @@ const uploadDocuments = asyncHandler(async (req, res) => {
   }
 
   // Check document limit
-  const currentCount = property._count.documents;
+  const currentCount = property.documents.length;
   if (currentCount >= config.upload.maxFiles) {
     return error(res, `Maximum ${config.upload.maxFiles} documents allowed per property`, 400);
   }
+
+  // Get the next sequence number
+  const maxSequence = property.documents.length > 0
+    ? Math.max(...property.documents.map(d => d.sequenceNo || 0))
+    : 0;
 
   // Handle file upload using multer
   uploadMultiple(req, res, async (uploadError) => {
@@ -61,41 +71,51 @@ const uploadDocuments = asyncHandler(async (req, res) => {
 
     try {
       const documents = [];
+      let sequenceNo = maxSequence;
 
       for (const file of req.files) {
+        sequenceNo++;
         const fileInfo = getFileInfo(file);
+        const originalName = file.originalname;
+
+        // Generate new filename: PropertyUniqueId-SequenceNo.extension
+        const newFileName = `${property.propertyUniqueId}-${sequenceNo}.${fileInfo.fileType}`;
+        const oldFilePath = path.join(process.cwd(), fileInfo.filePath);
+        const newFilePath = path.join(process.cwd(), config.upload.uploadDir, newFileName);
 
         // Compress images using Sharp
         if (['jpg', 'jpeg', 'png'].includes(fileInfo.fileType)) {
-          const inputPath = path.join(process.cwd(), fileInfo.filePath);
-          const outputPath = inputPath.replace(/\.(jpg|jpeg|png)$/i, '_compressed.$1');
-
           try {
-            await sharp(inputPath)
+            await sharp(oldFilePath)
               .resize(1920, 1920, { fit: 'inside', withoutEnlargement: true })
               .jpeg({ quality: 80 })
-              .toFile(outputPath);
+              .toFile(newFilePath);
 
-            // Replace original with compressed
-            fs.unlinkSync(inputPath);
-            fs.renameSync(outputPath, inputPath);
+            // Delete original temp file
+            fs.unlinkSync(oldFilePath);
 
             // Update file size
-            const stats = fs.statSync(inputPath);
+            const stats = fs.statSync(newFilePath);
             fileInfo.fileSize = stats.size;
           } catch (sharpError) {
             console.error('Image compression error:', sharpError.message);
-            // Continue with original file if compression fails
+            // If compression fails, just rename the file
+            fs.renameSync(oldFilePath, newFilePath);
           }
+        } else {
+          // For non-image files (PDF), just rename
+          fs.renameSync(oldFilePath, newFilePath);
         }
 
-        // Create document record
+        // Create document record with new naming convention
         const document = await prisma.document.create({
           data: {
-            fileName: fileInfo.fileName,
-            filePath: fileInfo.filePath,
+            fileName: newFileName,
+            originalName: originalName,
+            filePath: `${config.upload.uploadDir}/${newFileName}`,
             fileType: fileInfo.fileType,
             fileSize: fileInfo.fileSize,
+            sequenceNo: sequenceNo,
             description: req.body.description || null,
             propertyId: id
           }

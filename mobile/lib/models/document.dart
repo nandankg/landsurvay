@@ -1,22 +1,26 @@
 /// Document Model (PDF or Image attached to property)
+/// fileName format: {PropertyUniqueId}-{SequenceNo}.{ext}
+/// Example: BH2023-PAT-00001-1.pdf, BH2023-PAT-00001-2.jpg
 class PropertyDocument {
   final String id;
   final String propertyId;
-  final String fileName;
-  final String originalName;
+  final String fileName;      // Display name: BH2023-PAT-00001-1.pdf
+  final String? originalName; // Original uploaded filename
   final String fileType;
   final String filePath;
   final int? fileSize;
+  final int sequenceNo;       // Sequence number (1-7)
   final String? description;
 
   PropertyDocument({
     required this.id,
     required this.propertyId,
     required this.fileName,
-    required this.originalName,
+    this.originalName,
     required this.fileType,
     required this.filePath,
     this.fileSize,
+    this.sequenceNo = 1,
     this.description,
   });
 
@@ -25,10 +29,11 @@ class PropertyDocument {
       id: json['id']?.toString() ?? '',
       propertyId: json['propertyId']?.toString() ?? '',
       fileName: json['fileName'] ?? '',
-      originalName: json['originalName'] ?? '',
+      originalName: json['originalName'],
       fileType: json['fileType'] ?? '',
       filePath: json['filePath'] ?? '',
       fileSize: json['fileSize'] is int ? json['fileSize'] : (json['fileSize'] != null ? int.tryParse(json['fileSize'].toString()) : null),
+      sequenceNo: json['sequenceNo'] is int ? json['sequenceNo'] : (json['sequenceNo'] != null ? int.tryParse(json['sequenceNo'].toString()) ?? 1 : 1),
       description: json['description'],
     );
   }
@@ -42,6 +47,7 @@ class PropertyDocument {
       'fileType': fileType,
       'filePath': filePath,
       'fileSize': fileSize,
+      'sequenceNo': sequenceNo,
       'description': description,
     };
   }

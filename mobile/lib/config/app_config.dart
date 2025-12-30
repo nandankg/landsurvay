@@ -1,10 +1,11 @@
 /// Application Configuration
 class AppConfig {
-  // API Configuration - Use local backend for development
-  // static const String apiBaseUrl = 'https://bihar-land-api.onrender.com/api';
+  // API Configuration
+  // Local development URL (uncomment for local testing):
+  // static const String apiBaseUrl = 'http://localhost:3000/api';
 
-  // Local development URL
-  static const String apiBaseUrl = 'http://localhost:3000/api';
+  // Production API URL
+  static const String apiBaseUrl = 'https://bihar-land-api.onrender.com/api';
 
   // API Endpoints
   static const String healthEndpoint = '/health';

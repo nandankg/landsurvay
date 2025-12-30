@@ -65,7 +65,7 @@ class AppRouter {
         },
       ),
 
-      // Document Viewer Screen
+      // Document Viewer Screen (Secure - requires password)
       GoRoute(
         path: '/document/:id',
         name: 'documentViewer',
@@ -77,6 +77,7 @@ class AppRouter {
             document: extra?['document'] as PropertyDocument?,
             documents: extra?['documents'] as List<PropertyDocument>?,
             initialIndex: extra?['initialIndex'] as int? ?? 0,
+            propertyUniqueId: extra?['propertyUniqueId'] as String?,
           );
         },
       ),

@@ -84,10 +84,12 @@ model LandProperty {
 // Document attached to property (5-7 per property)
 model Document {
   id           String   @id @default(cuid())
-  fileName     String   // Original file name
+  fileName     String   // Display name: PropertyID-SequenceNo (e.g., BH2023-PAT-00001-1)
+  originalName String?  // Original uploaded file name
   filePath     String   // Storage path
   fileType     String   // pdf, jpg, jpeg, png
   fileSize     Int      // Size in bytes
+  sequenceNo   Int      @default(1) // Sequence number (1-7)
   description  String?  // Optional description
   uploadedAt   DateTime @default(now())
 

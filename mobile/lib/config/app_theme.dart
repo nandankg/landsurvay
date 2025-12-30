@@ -6,6 +6,7 @@ class AppTheme {
   static const Color primaryRed = Color(0xFFC41E3A);
   static const Color primaryRedDark = Color(0xFF9B1B30);
   static const Color primaryRedLight = Color(0xFFFF6B7A);
+  static const Color primaryBlue = Color(0xFF2E5AAC);
 
   // Module Colors
   static const Color moduleBlue = Color(0xFF2E5AAC);
