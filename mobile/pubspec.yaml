@@ -1,5 +1,5 @@
 name: bihar_land_app
-description: Bihar Land Survey & Revenue Mobile Application
+description: Bihar Land Revenue Mobile Application
 
 publish_to: 'none'
 
@@ -46,10 +46,10 @@ dev_dependencies:
 
 flutter_launcher_icons:
   android: true
-  ios: true
-  image_path: "assets/images/app_icon.png"
+  ios: false
+  image_path: "assets/logos/bihar_govt_logo.png"
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/images/app_icon.png"
+  adaptive_icon_foreground: "assets/logos/bihar_govt_logo.png"
 
 flutter:
   uses-material-design: true

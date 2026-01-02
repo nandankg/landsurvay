@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bihar Land Survey - NIC/Government Server Deployment Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #C41E3A;
+            --primary-dark: #9a1830;
+            --secondary: #1e40af;
+            --success: #16a34a;
+            --warning: #ca8a04;
+            --danger: #dc2626;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-code: #1e293b;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+
+        .nav a {
+            display: block;
+            padding: 16px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Sections */
+        section {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2 .step-number {
+            background: var(--primary);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        h3 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 24px 0 12px 0;
+        }
+
+        h4 {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 20px 0 10px 0;
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Blocks */
+        pre {
+            background: var(--bg-code);
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 16px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        pre::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 10px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+        }
+
+        p code, li code {
+            background: #fee2e2;
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* Tables */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-weight: 600;
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: var(--bg-secondary);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 16px 0;
+            padding-left: 24px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .checklist li::before {
+            content: '☐';
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin: 16px 0;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .info-box.note {
+            background: #eff6ff;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .info-box.warning {
+            background: #fefce8;
+            border-left: 4px solid var(--warning);
+        }
+
+        .info-box.danger {
+            background: #fef2f2;
+            border-left: 4px solid var(--danger);
+        }
+
+        .info-box.success {
+            background: #f0fdf4;
+            border-left: 4px solid var(--success);
+        }
+
+        .info-box-icon {
+            font-size: 20px;
+        }
+
+        .info-box-content {
+            flex: 1;
+        }
+
+        .info-box-content strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        /* Architecture Diagram */
+        .architecture-diagram {
+            background: var(--bg-code);
+            color: #22d3ee;
+            padding: 24px;
+            border-radius: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .card-value {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Command Reference */
+        .command-ref {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1px;
+            background: var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .command-ref > div {
+            padding: 12px 16px;
+            background: var(--bg-primary);
+        }
+
+        .command-ref > div:nth-child(odd) {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .command-ref code {
+            background: var(--bg-code);
+            color: #22d3ee;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Print Styles */
+        @media print {
+            .nav-container {
+                display: none;
+            }
+
+            section {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+
+            pre {
+                white-space: pre-wrap;
+                word-wrap: break-word;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            section {
+                padding: 20px;
+            }
+
+            .command-ref {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <span class="badge">Official Documentation</span>
+            <h1>Bihar Land Survey</h1>
+            <p>NIC/Government Server Deployment Guide with GitHub CI/CD Integration</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <div class="nav-container">
+        <nav class="nav">
+            <a href="#architecture">Architecture</a>
+            <a href="#requirements">Requirements</a>
+            <a href="#preparation">Preparation</a>
+            <a href="#database">Database</a>
+            <a href="#backend">Backend</a>
+            <a href="#admin">Admin Portal</a>
+            <a href="#nginx">Nginx</a>
+            <a href="#ssl">SSL/HTTPS</a>
+            <a href="#cicd">CI/CD</a>
+            <a href="#security">Security</a>
+            <a href="#maintenance">Maintenance</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+
+        <!-- Architecture Overview -->
+        <section id="architecture">
+            <h2>Architecture Overview</h2>
+            <p>The application consists of three main components deployed on a single server with Nginx as reverse proxy.</p>
+
+            <div class="architecture-diagram">
+┌─────────────────────────────────────────────────────────────────┐
+│                    NIC/Government Server                         │
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │                         Nginx                                ││
+│  │         (Reverse Proxy + SSL + Static Files)                ││
+│  └─────────────────┬───────────────────┬───────────────────────┘│
+│                    │                   │                         │
+│         ┌──────────▼──────────┐ ┌──────▼──────────┐             │
+│         │   Admin Portal      │ │   Backend API   │             │
+│         │   (Static Files)    │ │   (Node.js)     │             │
+│         │   Port: 80/443      │ │   Port: 3000    │             │
+│         └─────────────────────┘ └────────┬────────┘             │
+│                                          │                       │
+│                               ┌──────────▼──────────┐           │
+│                               │    PostgreSQL       │           │
+│                               │    Database         │           │
+│                               │    Port: 5432       │           │
+│                               └─────────────────────┘           │
+└─────────────────────────────────────────────────────────────────┘
+                                    │
+                                    │ GitHub Webhook / Actions
+                                    ▼
+                    ┌───────────────────────────────┐
+                    │       GitHub Repository       │
+                    │    (Source Code + CI/CD)      │
+                    └───────────────────────────────┘</div>
+        </section>
+
+        <!-- Server Requirements -->
+        <section id="requirements">
+            <h2>Server Requirements</h2>
+
+            <h3>Minimum Hardware Requirements</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Minimum</th>
+                            <th>Recommended</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CPU</td>
+                            <td>2 vCPU</td>
+                            <td>4 vCPU</td>
+                        </tr>
+                        <tr>
+                            <td>RAM</td>
+                            <td>4 GB</td>
+                            <td>8 GB</td>
+                        </tr>
+                        <tr>
+                            <td>Storage</td>
+                            <td>50 GB SSD</td>
+                            <td>100 GB SSD</td>
+                        </tr>
+                        <tr>
+                            <td>Network</td>
+                            <td>100 Mbps</td>
+                            <td>1 Gbps</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Software Requirements</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Software</th>
+                            <th>Version</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>OS</td>
+                            <td>Ubuntu 20.04/22.04 LTS or RHEL 8/9</td>
+                            <td>Server Operating System</td>
+                        </tr>
+                        <tr>
+                            <td>Node.js</td>
+                            <td>18.x LTS or 20.x LTS</td>
+                            <td>Backend Runtime</td>
+                        </tr>
+                        <tr>
+                            <td>PostgreSQL</td>
+                            <td>14 or 15</td>
+                            <td>Database</td>
+                        </tr>
+                        <tr>
+                            <td>Nginx</td>
+                            <td>1.18+</td>
+                            <td>Reverse Proxy & Web Server</td>
+                        </tr>
+                        <tr>
+                            <td>Git</td>
+                            <td>2.x</td>
+                            <td>Version Control</td>
+                        </tr>
+                        <tr>
+                            <td>PM2</td>
+                            <td>Latest</td>
+                            <td>Process Manager</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Pre-Deployment Checklist -->
+        <section>
+            <h2>Pre-Deployment Checklist</h2>
+            <ul class="checklist">
+                <li>Server access credentials (SSH)</li>
+                <li>Domain name configured (e.g., biharland.gov.in)</li>
+                <li>SSL certificate (or use Let's Encrypt)</li>
+                <li>GitHub repository created</li>
+                <li>GitHub SSH key for server</li>
+                <li>Firewall ports: 22 (SSH), 80 (HTTP), 443 (HTTPS)</li>
+                <li>NIC network team approval for required ports</li>
+            </ul>
+        </section>
+
+        <!-- Step 1: Server Preparation -->
+        <section id="preparation">
+            <h2><span class="step-number">1</span> Server Preparation</h2>
+
+            <h3>1.1 Connect to Server</h3>
+            <pre data-lang="bash"># SSH into the server
+ssh username@server-ip-address
+
+# Or using key-based authentication
+ssh -i /path/to/private-key.pem username@server-ip-address</pre>
+
+            <h3>1.2 Update System</h3>
+            <h4>For Ubuntu/Debian:</h4>
+            <pre data-lang="bash">sudo apt update && sudo apt upgrade -y
+sudo apt install -y curl wget git vim htop unzip</pre>
+
+            <h4>For RHEL/CentOS:</h4>
+            <pre data-lang="bash">sudo yum update -y
+sudo yum install -y curl wget git vim htop unzip</pre>
+
+            <h3>1.3 Create Application User</h3>
+            <pre data-lang="bash"># Create dedicated user for the application
+sudo useradd -m -s /bin/bash biharland
+sudo usermod -aG sudo biharland  # Ubuntu
+# sudo usermod -aG wheel biharland  # RHEL/CentOS
+
+# Set password
+sudo passwd biharland
+
+# Switch to application user
+sudo su - biharland</pre>
+
+            <h3>1.4 Create Directory Structure</h3>
+            <pre data-lang="bash"># Create application directories
+mkdir -p ~/apps/bihar-land
+mkdir -p ~/apps/bihar-land/backend
+mkdir -p ~/apps/bihar-land/admin
+mkdir -p ~/apps/bihar-land/uploads
+mkdir -p ~/apps/bihar-land/logs
+mkdir -p ~/apps/bihar-land/backups</pre>
+        </section>
+
+        <!-- Step 2: Install Required Software -->
+        <section>
+            <h2><span class="step-number">2</span> Install Required Software</h2>
+
+            <h3>2.1 Install Node.js (Using NVM)</h3>
+            <pre data-lang="bash"># Install NVM
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# Reload shell
+source ~/.bashrc
+
+# Install Node.js LTS
+nvm install 20
+nvm use 20
+nvm alias default 20
+
+# Verify installation
+node --version  # Should show v20.x.x
+npm --version</pre>
+
+            <h3>2.2 Install PostgreSQL</h3>
+            <h4>For Ubuntu:</h4>
+            <pre data-lang="bash"># Add PostgreSQL repository
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo apt update
+
+# Install PostgreSQL 15
+sudo apt install -y postgresql-15 postgresql-contrib-15
+
+# Start and enable PostgreSQL
+sudo systemctl start postgresql
+sudo systemctl enable postgresql</pre>
+
+            <h3>2.3 Install Nginx</h3>
+            <pre data-lang="bash"># Ubuntu
+sudo apt install -y nginx
+sudo systemctl start nginx
+sudo systemctl enable nginx</pre>
+
+            <h3>2.4 Install PM2 (Process Manager)</h3>
+            <pre data-lang="bash">npm install -g pm2
+
+# Setup PM2 to start on boot
+pm2 startup
+# Follow the instructions shown</pre>
+        </section>
+
+        <!-- Step 3: PostgreSQL Database Setup -->
+        <section id="database">
+            <h2><span class="step-number">3</span> PostgreSQL Database Setup</h2>
+
+            <h3>3.1 Configure PostgreSQL</h3>
+            <pre data-lang="bash"># Switch to postgres user
+sudo -u postgres psql</pre>
+
+            <pre data-lang="sql">-- Create database user
+CREATE USER bihar_land_user WITH PASSWORD 'your_secure_password_here';
+
+-- Create database with UTF-8 encoding (required for Hindi support)
+CREATE DATABASE bihar_land_db
+  WITH ENCODING 'UTF8'
+  LC_COLLATE='en_US.UTF-8'
+  LC_CTYPE='en_US.UTF-8'
+  TEMPLATE=template0
+  OWNER bihar_land_user;
+
+-- Grant privileges
+GRANT ALL PRIVILEGES ON DATABASE bihar_land_db TO bihar_land_user;
+
+-- Connect to the database and grant schema privileges
+\c bihar_land_db
+GRANT ALL ON SCHEMA public TO bihar_land_user;
+
+-- Exit
+\q</pre>
+
+            <div class="info-box warning">
+                <span class="info-box-icon">⚠️</span>
+                <div class="info-box-content">
+                    <strong>Important</strong>
+                    Replace <code>your_secure_password_here</code> with a strong, unique password. Store it securely.
+                </div>
+            </div>
+
+            <h3>3.2 Test Database Connection</h3>
+            <pre data-lang="bash">psql -U bihar_land_user -d bihar_land_db -h localhost
+# Enter password when prompted
+# \q to exit</pre>
+        </section>
+
+        <!-- Step 4: Backend API Deployment -->
+        <section id="backend">
+            <h2><span class="step-number">4</span> Backend API Deployment</h2>
+
+            <h3>4.1 Clone Repository</h3>
+            <pre data-lang="bash">cd ~/apps/bihar-land
+
+# Clone from GitHub (replace with your repository URL)
+git clone https://github.com/YOUR_ORG/bihar-land-survey.git repo</pre>
+
+            <h3>4.2 Setup Backend</h3>
+            <pre data-lang="bash">cd ~/apps/bihar-land/repo/backend
+
+# Install dependencies
+npm install
+
+# Create environment file
+cp .env.example .env
+vim .env</pre>
+
+            <h3>4.3 Configure Environment Variables</h3>
+            <pre data-lang="env"># Database
+DATABASE_URL="postgresql://bihar_land_user:your_password@localhost:5432/bihar_land_db"
+
+# JWT Secret (generate a secure random string)
+JWT_SECRET="generate-a-very-long-random-string-here-minimum-32-characters"
+
+# Server Configuration
+NODE_ENV=production
+PORT=3000
+
+# File Upload
+MAX_FILES=7
+UPLOAD_DIR=uploads
+
+# CORS - Add your domain
+CORS_ORIGINS=https://admin.biharland.gov.in,https://biharland.gov.in</pre>
+
+            <h3>4.4 Generate JWT Secret</h3>
+            <pre data-lang="bash"># Generate secure random string
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"</pre>
+
+            <h3>4.5 Setup Database Schema</h3>
+            <pre data-lang="bash"># Generate Prisma client
+npx prisma generate
+
+# Push schema to database
+npx prisma db push
+
+# Seed initial data (admin user)
+npx prisma db seed</pre>
+
+            <h3>4.6 Test Backend</h3>
+            <pre data-lang="bash"># Start backend temporarily to test
+npm start
+
+# In another terminal, test the API
+curl http://localhost:3000/api/health
+# Should return: {"success":true,"message":"Bihar Land API is running"...}</pre>
+        </section>
+
+        <!-- Step 5: Admin Web App Deployment -->
+        <section id="admin">
+            <h2><span class="step-number">5</span> Admin Web App Deployment</h2>
+
+            <h3>5.1 Build Admin Portal</h3>
+            <pre data-lang="bash">cd ~/apps/bihar-land/repo/admin
+
+# Install dependencies
+npm install
+
+# Create production environment file
+echo "VITE_API_URL=https://api.biharland.gov.in/api" > .env.production
+
+# Build for production
+npm run build
+
+# The built files are in 'dist' folder
+ls -la dist/</pre>
+
+            <h3>5.2 Copy Build to Web Server Directory</h3>
+            <pre data-lang="bash"># Create web directory
+sudo mkdir -p /var/www/bihar-land-admin
+
+# Copy built files
+sudo cp -r dist/* /var/www/bihar-land-admin/
+
+# Set permissions
+sudo chown -R www-data:www-data /var/www/bihar-land-admin  # Ubuntu</pre>
+        </section>
+
+        <!-- Step 6: Nginx Configuration -->
+        <section id="nginx">
+            <h2><span class="step-number">6</span> Nginx Configuration</h2>
+
+            <h3>6.1 Admin Portal Configuration</h3>
+            <pre data-lang="bash">sudo vim /etc/nginx/sites-available/bihar-land-admin</pre>
+            <pre data-lang="nginx"># Admin Portal - Static Site
+server {
+    listen 80;
+    server_name admin.biharland.gov.in;
+
+    root /var/www/bihar-land-admin;
+    index index.html;
+
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml text/javascript
+               application/javascript application/json application/xml;
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    # SPA routing - all routes go to index.html
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Cache static assets
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}</pre>
+
+            <h3>6.2 Backend API Configuration</h3>
+            <pre data-lang="bash">sudo vim /etc/nginx/sites-available/bihar-land-api</pre>
+            <pre data-lang="nginx"># Backend API - Reverse Proxy
+server {
+    listen 80;
+    server_name api.biharland.gov.in;
+
+    # Max upload size (for documents)
+    client_max_body_size 50M;
+
+    # API proxy
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 300s;
+    }
+}</pre>
+
+            <h3>6.3 Enable Sites</h3>
+            <pre data-lang="bash"># Enable sites
+sudo ln -s /etc/nginx/sites-available/bihar-land-admin /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/bihar-land-api /etc/nginx/sites-enabled/
+
+# Remove default site
+sudo rm /etc/nginx/sites-enabled/default
+
+# Test configuration
+sudo nginx -t
+
+# Reload Nginx
+sudo systemctl reload nginx</pre>
+        </section>
+
+        <!-- Step 7: SSL/HTTPS Setup -->
+        <section id="ssl">
+            <h2><span class="step-number">7</span> SSL/HTTPS Setup</h2>
+
+            <h3>Option A: Using Let's Encrypt</h3>
+            <pre data-lang="bash"># Install Certbot
+sudo apt install -y certbot python3-certbot-nginx
+
+# Obtain certificates
+sudo certbot --nginx -d admin.biharland.gov.in -d api.biharland.gov.in
+
+# Test renewal
+sudo certbot renew --dry-run</pre>
+
+            <h3>Option B: Using NIC/Government SSL Certificate</h3>
+            <pre data-lang="bash"># Create SSL directory
+sudo mkdir -p /etc/nginx/ssl
+
+# Copy your SSL certificate files (provided by NIC)
+sudo cp your_certificate.crt /etc/nginx/ssl/biharland.crt
+sudo cp your_private_key.key /etc/nginx/ssl/biharland.key
+sudo cp your_ca_bundle.crt /etc/nginx/ssl/ca-bundle.crt
+
+# Set permissions
+sudo chmod 600 /etc/nginx/ssl/*.key
+sudo chmod 644 /etc/nginx/ssl/*.crt</pre>
+
+            <div class="info-box note">
+                <span class="info-box-icon">📝</span>
+                <div class="info-box-content">
+                    <strong>Note</strong>
+                    Contact NIC for official SSL certificates for government domains.
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 8: GitHub CI/CD Setup -->
+        <section id="cicd">
+            <h2><span class="step-number">8</span> GitHub CI/CD Setup</h2>
+
+            <h3>8.1 Create Deployment Script on Server</h3>
+            <pre data-lang="bash">vim ~/apps/bihar-land/deploy.sh</pre>
+            <pre data-lang="bash">#!/bin/bash
+# Bihar Land Survey - Deployment Script
+
+set -e
+
+APP_DIR=~/apps/bihar-land/repo
+LOG_FILE=~/apps/bihar-land/logs/deploy.log
+
+echo "$(date): Starting deployment..." >> $LOG_FILE
+
+cd $APP_DIR
+
+# Pull latest changes
+echo "Pulling latest changes..."
+git fetch origin main
+git reset --hard origin/main
+
+# Deploy Backend
+echo "Deploying Backend..."
+cd $APP_DIR/backend
+npm install --production
+npx prisma generate
+npx prisma db push --accept-data-loss
+
+# Restart backend with PM2
+pm2 restart bihar-land-api || pm2 start npm --name "bihar-land-api" -- start
+
+# Deploy Admin Portal
+echo "Deploying Admin Portal..."
+cd $APP_DIR/admin
+npm install
+npm run build
+
+# Copy built files to web server
+sudo cp -r dist/* /var/www/bihar-land-admin/
+
+echo "$(date): Deployment completed successfully!" >> $LOG_FILE
+echo "Deployment completed!"</pre>
+            <pre data-lang="bash">chmod +x ~/apps/bihar-land/deploy.sh</pre>
+
+            <h3>8.2 Create GitHub Actions Workflow</h3>
+            <p>Create <code>.github/workflows/deploy.yml</code> in your repository:</p>
+            <pre data-lang="yaml">name: Deploy to NIC Server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            cd ~/apps/bihar-land
+            ./deploy.sh</pre>
+
+            <h3>8.3 Configure GitHub Secrets</h3>
+            <p>Go to your GitHub repository → Settings → Secrets and variables → Actions</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Secret Name</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>SERVER_HOST</code></td>
+                            <td>Your server IP or hostname</td>
+                        </tr>
+                        <tr>
+                            <td><code>SERVER_USERNAME</code></td>
+                            <td>biharland (or your deployment user)</td>
+                        </tr>
+                        <tr>
+                            <td><code>SERVER_SSH_KEY</code></td>
+                            <td>Private SSH key content</td>
+                        </tr>
+                        <tr>
+                            <td><code>SERVER_PORT</code></td>
+                            <td>22 (or your SSH port)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="info-box success">
+                <span class="info-box-icon">✅</span>
+                <div class="info-box-content">
+                    <strong>Automatic Deployment</strong>
+                    Once configured, every push to the <code>main</code> branch will automatically deploy to the server.
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 9: Process Management -->
+        <section>
+            <h2><span class="step-number">9</span> Process Management with PM2</h2>
+
+            <h3>9.1 PM2 Ecosystem Configuration</h3>
+            <pre data-lang="javascript">// ecosystem.config.js
+module.exports = {
+  apps: [{
+    name: 'bihar-land-api',
+    script: 'src/index.js',
+    instances: 'max',  // Use all CPU cores
+    exec_mode: 'cluster',
+    env: {
+      NODE_ENV: 'production',
+      PORT: 3000
+    },
+    error_file: '~/apps/bihar-land/logs/error.log',
+    out_file: '~/apps/bihar-land/logs/out.log',
+    max_memory_restart: '1G'
+  }]
+};</pre>
+
+            <h3>9.2 PM2 Commands Reference</h3>
+            <div class="command-ref">
+                <div>View status</div>
+                <div><code>pm2 status</code></div>
+                <div>View logs</div>
+                <div><code>pm2 logs bihar-land-api</code></div>
+                <div>Restart</div>
+                <div><code>pm2 restart bihar-land-api</code></div>
+                <div>Stop</div>
+                <div><code>pm2 stop bihar-land-api</code></div>
+                <div>Monitor</div>
+                <div><code>pm2 monit</code></div>
+            </div>
+        </section>
+
+        <!-- Step 10: Security -->
+        <section id="security">
+            <h2><span class="step-number">10</span> Firewall & Security</h2>
+
+            <h3>10.1 Configure UFW Firewall (Ubuntu)</h3>
+            <pre data-lang="bash"># Enable UFW
+sudo ufw enable
+
+# Allow SSH
+sudo ufw allow 22/tcp
+
+# Allow HTTP and HTTPS
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+
+# Check status
+sudo ufw status</pre>
+
+            <h3>10.2 Security Best Practices</h3>
+            <pre data-lang="bash"># 1. Disable root SSH login
+sudo vim /etc/ssh/sshd_config
+# Set: PermitRootLogin no
+sudo systemctl restart sshd
+
+# 2. Install fail2ban
+sudo apt install -y fail2ban
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+
+# 3. Configure automatic security updates
+sudo apt install -y unattended-upgrades
+sudo dpkg-reconfigure -plow unattended-upgrades</pre>
+        </section>
+
+        <!-- Maintenance -->
+        <section id="maintenance">
+            <h2>Maintenance & Updates</h2>
+
+            <h3>Regular Update Procedure</h3>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon">🚀</div>
+                    <div class="card-title">Automatic</div>
+                    <div class="card-value">Push to GitHub</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔧</div>
+                    <div class="card-title">Manual</div>
+                    <div class="card-value">Run deploy.sh</div>
+                </div>
+            </div>
+
+            <h3>Database Backup Script</h3>
+            <pre data-lang="bash">#!/bin/bash
+# backup.sh - Database Backup Script
+
+BACKUP_DIR=~/apps/bihar-land/backups
+DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_FILE=$BACKUP_DIR/bihar_land_db_$DATE.sql
+
+# Create backup
+pg_dump -U bihar_land_user -h localhost bihar_land_db > $BACKUP_FILE
+
+# Compress
+gzip $BACKUP_FILE
+
+# Delete backups older than 30 days
+find $BACKUP_DIR -name "*.sql.gz" -mtime +30 -delete
+
+echo "Backup completed: ${BACKUP_FILE}.gz"</pre>
+
+            <h3>Schedule Daily Backup</h3>
+            <pre data-lang="bash"># Add to crontab for daily backup at 2 AM
+crontab -e
+# Add: 0 2 * * * ~/apps/bihar-land/backup.sh >> ~/apps/bihar-land/logs/backup.log 2>&1</pre>
+        </section>
+
+        <!-- Quick Reference -->
+        <section>
+            <h2>Quick Reference Commands</h2>
+            <div class="command-ref">
+                <div>Deployment</div>
+                <div><code>~/apps/bihar-land/deploy.sh</code></div>
+                <div>Backend Status</div>
+                <div><code>pm2 status</code></div>
+                <div>Backend Logs</div>
+                <div><code>pm2 logs bihar-land-api</code></div>
+                <div>Nginx Test</div>
+                <div><code>sudo nginx -t</code></div>
+                <div>Nginx Reload</div>
+                <div><code>sudo systemctl reload nginx</code></div>
+                <div>PostgreSQL Status</div>
+                <div><code>sudo systemctl status postgresql</code></div>
+                <div>Backup</div>
+                <div><code>~/apps/bihar-land/backup.sh</code></div>
+            </div>
+        </section>
+
+        <!-- URLs Summary -->
+        <section>
+            <h2>URLs (After Deployment)</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>URL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Admin Portal</td>
+                            <td><code>https://admin.biharland.gov.in</code></td>
+                        </tr>
+                        <tr>
+                            <td>Backend API</td>
+                            <td><code>https://api.biharland.gov.in/api</code></td>
+                        </tr>
+                        <tr>
+                            <td>Health Check</td>
+                            <td><code>https://api.biharland.gov.in/api/health</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="info-box danger">
+                <span class="info-box-icon">🔐</span>
+                <div class="info-box-content">
+                    <strong>Default Admin Login</strong>
+                    Username: <code>admin</code> / Password: <code>admin123</code><br>
+                    <strong>Change immediately after first login!</strong>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>
+            <strong>Bihar Land Survey & Revenue Application</strong><br>
+            Department of Revenue and Land Reforms, Government of Bihar<br><br>
+            Deployment guide created for NIC/Government server deployment<br>
+            Last updated: December 2024
+        </p>
+    </footer>
+
+    <script>
+        // Smooth scroll for navigation
+        document.querySelectorAll('.nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Highlight current section in navigation
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.color = '';
+                link.style.borderBottomColor = 'transparent';
+                if (link.getAttribute('href') === '#' + current) {
+                    link.style.color = '#C41E3A';
+                    link.style.borderBottomColor = '#C41E3A';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

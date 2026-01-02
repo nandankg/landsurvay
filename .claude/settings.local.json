@@ -32,7 +32,15 @@
       "Bash(cat:*)",
       "Bash(\"C:/AndroidStudio/jbr/bin/jlink.exe\" --version)",
       "Bash(\"C:/AndroidStudio/jbr/bin/jlink.exe\" --module-path D:/gradle_home/caches/transforms-3/77c90ebb1a40e9b86401e7162cee1f61/transformed/output/temp/jmod --add-modules java.base --output D:/gradle_home/caches/transforms-3/test-output --disable-plugin system-modules)",
-      "WebFetch(domain:bihar-land-api.onrender.com)"
+      "WebFetch(domain:bihar-land-api.onrender.com)",
+      "Bash(flutter pub run:*)",
+      "Bash(dart run:*)",
+      "Bash(magick:*)",
+      "Bash(\"C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/magick.exe\" --version)",
+      "Bash(npm install:*)",
+      "Bash(node generate-icons.js:*)",
+      "Bash(ls:*)",
+      "Bash(flutter analyze:*)"
     ]
   }
 }

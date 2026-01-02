@@ -20,8 +20,8 @@ class AppConfig {
   static const int receiveTimeout = 30000; // 30 seconds
 
   // App Information
-  static const String appName = 'Bihar Land Survey';
-  static const String appNameHindi = 'बिहार भूमि सर्वेक्षण';
+  static const String appName = 'Bihar Land Revenue';
+  static const String appNameHindi = 'बिहार भूमि राजस्व';
   static const String departmentName = 'Department of Revenue and Land Reforms';
   static const String departmentNameHindi = 'राजस्व एवं भूमि सुधार विभाग';
   static const String governmentName = 'Government of Bihar';

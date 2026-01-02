@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- White background -->
+  <circle cx="256" cy="256" r="250" fill="#FFFFFF"/>
+  
+  <!-- Main circular border -->
+  <circle cx="256" cy="256" r="230" fill="none" stroke="#C62828" stroke-width="6"/>
+  
+  <!-- Bodhi Tree - Main trunk -->
+  <line x1="256" y1="120" x2="256" y2="340" stroke="#C62828" stroke-width="5"/>
+  
+  <!-- Tree branches - Left side -->
+  <line x1="256" y1="145" x2="195" y2="110" stroke="#C62828" stroke-width="4"/>
+  <line x1="256" y1="170" x2="170" y2="135" stroke="#C62828" stroke-width="4"/>
+  <line x1="256" y1="195" x2="150" y2="165" stroke="#C62828" stroke-width="4"/>
+  <line x1="256" y1="220" x2="165" y2="195" stroke="#C62828" stroke-width="4"/>
+  <line x1="256" y1="245" x2="180" y2="230" stroke="#C62828" stroke-width="4"/>
+  
+  <!-- Tree branches - Right side -->
+  <line x1="256" y1="145" x2="317" y2="110" stroke="#C62828" stroke-width="4"/>
+  <line x1="256" y1="170" x2="342" y2="135" stroke="#C62828" stroke-width="4"/>
+  <line x1="256" y1="195" x2="362" y2="165" stroke="#C62828" stroke-width="4"/>
+  <line x1="256" y1="220" x2="347" y2="195" stroke="#C62828" stroke-width="4"/>
+  <line x1="256" y1="245" x2="332" y2="230" stroke="#C62828" stroke-width="4"/>
+  
+  <!-- Leaves - Top -->
+  <ellipse cx="256" cy="95" rx="14" ry="26" fill="none" stroke="#C62828" stroke-width="3"/>
+  
+  <!-- Leaves - Left branches -->
+  <ellipse cx="178" cy="92" rx="12" ry="24" fill="none" stroke="#C62828" stroke-width="3" transform="rotate(-35 178 92)"/>
+  <ellipse cx="150" cy="115" rx="12" ry="24" fill="none" stroke="#C62828" stroke-width="3" transform="rotate(-45 150 115)"/>
+  <ellipse cx="128" cy="145" rx="12" ry="24" fill="none" stroke="#C62828" stroke-width="3" transform="rotate(-50 128 145)"/>
+  <ellipse cx="145" cy="180" rx="11" ry="22" fill="none" stroke="#C62828" stroke-width="3" transform="rotate(-40 145 180)"/>
+  <ellipse cx="165" cy="215" rx="10" ry="20" fill="none" stroke="#C62828" stroke-width="3" transform="rotate(-30 165 215)"/>
+  
+  <!-- Leaves - Right branches -->
+  <ellipse cx="334" cy="92" rx="12" ry="24" fill="none" stroke="#C62828" stroke-width="3" transform="rotate(35 334 92)"/>
+  <ellipse cx="362" cy="115" rx="12" ry="24" fill="none" stroke="#C62828" stroke-width="3" transform="rotate(45 362 115)"/>
+  <ellipse cx="384" cy="145" rx="12" ry="24" fill="none" stroke="#C62828" stroke-width="3" transform="rotate(50 384 145)"/>
+  <ellipse cx="367" cy="180" rx="11" ry="22" fill="none" stroke="#C62828" stroke-width="3" transform="rotate(40 367 180)"/>
+  <ellipse cx="347" cy="215" rx="10" ry="20" fill="none" stroke="#C62828" stroke-width="3" transform="rotate(30 347 215)"/>
+  
+  <!-- Additional leaves -->
+  <ellipse cx="210" cy="105" rx="10" ry="20" fill="none" stroke="#C62828" stroke-width="3" transform="rotate(-25 210 105)"/>
+  <ellipse cx="302" cy="105" rx="10" ry="20" fill="none" stroke="#C62828" stroke-width="3" transform="rotate(25 302 105)"/>
+  <ellipse cx="232" cy="125" rx="9" ry="18" fill="none" stroke="#C62828" stroke-width="3" transform="rotate(-15 232 125)"/>
+  <ellipse cx="280" cy="125" rx="9" ry="18" fill="none" stroke="#C62828" stroke-width="3" transform="rotate(15 280 125)"/>
+  
+  <!-- Cocoons - Left -->
+  <ellipse cx="210" cy="295" rx="14" ry="32" fill="none" stroke="#C62828" stroke-width="3"/>
+  <line x1="210" y1="263" x2="228" y2="248" stroke="#C62828" stroke-width="2.5"/>
+  <path d="M200 278 Q210 284 220 278" fill="none" stroke="#C62828" stroke-width="2"/>
+  <path d="M200 290 Q210 296 220 290" fill="none" stroke="#C62828" stroke-width="2"/>
+  <path d="M200 302 Q210 308 220 302" fill="none" stroke="#C62828" stroke-width="2"/>
+  <path d="M200 314 Q210 320 220 314" fill="none" stroke="#C62828" stroke-width="2"/>
+  
+  <!-- Cocoons - Right -->
+  <ellipse cx="302" cy="295" rx="14" ry="32" fill="none" stroke="#C62828" stroke-width="3"/>
+  <line x1="302" y1="263" x2="284" y2="248" stroke="#C62828" stroke-width="2.5"/>
+  <path d="M292 278 Q302 284 312 278" fill="none" stroke="#C62828" stroke-width="2"/>
+  <path d="M292 290 Q302 296 312 290" fill="none" stroke="#C62828" stroke-width="2"/>
+  <path d="M292 302 Q302 308 312 302" fill="none" stroke="#C62828" stroke-width="2"/>
+  <path d="M292 314 Q302 320 312 314" fill="none" stroke="#C62828" stroke-width="2"/>
+  
+  <!-- Left Swastika -->
+  <g transform="translate(100, 250)">
+    <line x1="0" y1="-28" x2="0" y2="28" stroke="#C62828" stroke-width="6"/>
+    <line x1="-28" y1="0" x2="28" y2="0" stroke="#C62828" stroke-width="6"/>
+    <line x1="0" y1="-28" x2="18" y2="-28" stroke="#C62828" stroke-width="6"/>
+    <line x1="28" y1="0" x2="28" y2="18" stroke="#C62828" stroke-width="6"/>
+    <line x1="0" y1="28" x2="-18" y2="28" stroke="#C62828" stroke-width="6"/>
+    <line x1="-28" y1="0" x2="-28" y2="-18" stroke="#C62828" stroke-width="6"/>
+  </g>
+  
+  <!-- Right Swastika -->
+  <g transform="translate(412, 250)">
+    <line x1="0" y1="-28" x2="0" y2="28" stroke="#C62828" stroke-width="6"/>
+    <line x1="-28" y1="0" x2="28" y2="0" stroke="#C62828" stroke-width="6"/>
+    <line x1="0" y1="-28" x2="-18" y2="-28" stroke="#C62828" stroke-width="6"/>
+    <line x1="-28" y1="0" x2="-28" y2="18" stroke="#C62828" stroke-width="6"/>
+    <line x1="0" y1="28" x2="18" y2="28" stroke="#C62828" stroke-width="6"/>
+    <line x1="28" y1="0" x2="28" y2="-18" stroke="#C62828" stroke-width="6"/>
+  </g>
+  
+  <!-- Base platform -->
+  <rect x="180" y="350" width="152" height="60" fill="none" stroke="#C62828" stroke-width="5"/>
+  <rect x="186" y="356" width="140" height="48" fill="none" stroke="#C62828" stroke-width="2"/>
+  
+  <!-- Decorative pattern inside base -->
+  <line x1="205" y1="362" x2="205" y2="398" stroke="#C62828" stroke-width="5"/>
+  <line x1="230" y1="358" x2="230" y2="402" stroke="#C62828" stroke-width="5"/>
+  <line x1="255" y1="362" x2="255" y2="398" stroke="#C62828" stroke-width="5"/>
+  <line x1="280" y1="358" x2="280" y2="402" stroke="#C62828" stroke-width="5"/>
+  <line x1="305" y1="362" x2="305" y2="398" stroke="#C62828" stroke-width="5"/>
+  
+  <line x1="192" y1="370" x2="318" y2="370" stroke="#C62828" stroke-width="2.5"/>
+  <line x1="192" y1="390" x2="318" y2="390" stroke="#C62828" stroke-width="2.5"/>
+</svg>

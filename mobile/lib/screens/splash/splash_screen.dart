@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/app_theme.dart';
-import '../../config/app_config.dart';
 import '../../widgets/bihar_emblem.dart';
+import '../../widgets/circular_text.dart';
 
 /// Splash Screen with Bihar Government branding
 class SplashScreen extends StatefulWidget {
@@ -97,52 +97,14 @@ class _SplashScreenState extends State<SplashScreen>
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              // Circular emblem with text
-                              Container(
-                                width: 200,
-                                height: 200,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: AppTheme.textPrimary.withOpacity(0.2),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    // Curved text at top
-                                    Positioned(
-                                      top: 15,
-                                      child: Text(
-                                        'Department of Revenue and Land Reforms,',
-                                        style: TextStyle(
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.w500,
-                                          color: AppTheme.textPrimary,
-                                          letterSpacing: 0.3,
-                                        ),
-                                      ),
-                                    ),
-
-                                    // Center tree emblem
-                                    const TreeEmblem(size: 100),
-
-                                    // Curved text at bottom
-                                    Positioned(
-                                      bottom: 15,
-                                      child: Text(
-                                        'Govt. Of Bihar',
-                                        style: TextStyle(
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.w500,
-                                          color: AppTheme.textPrimary,
-                                          letterSpacing: 0.3,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              // Circular emblem with curved text
+                              CircularEmblemWithText(
+                                size: 220,
+                                topText: 'Department of Revenue and Land Reforms,',
+                                bottomText: 'Govt. Of Bihar',
+                                textColor: AppTheme.textPrimary,
+                                borderColor: AppTheme.textPrimary.withOpacity(0.2),
+                                centerWidget: const BiharGovtLogo(size: 110),
                               ),
                             ],
                           ),
@@ -159,38 +121,9 @@ class _SplashScreenState extends State<SplashScreen>
                 builder: (context, child) {
                   return Opacity(
                     opacity: _fadeAnimation.value,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 30),
-                      child: Column(
-                        children: [
-                          Text(
-                            'NIC',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF0066B3),
-                              letterSpacing: 2,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'राष्ट्रीय सूचना विज्ञान केंद्र',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xFFE65100),
-                            ),
-                          ),
-                          Text(
-                            'National Informatics Centre',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xFF0066B3),
-                            ),
-                          ),
-                        ],
-                      ),
+                    child: const Padding(
+                      padding: EdgeInsets.only(bottom: 30),
+                      child: NICLogo(size: 120),
                     ),
                   );
                 },

@@ -33,7 +33,7 @@ class BiharLandApp extends StatelessWidget {
     return Provider<ApiService>(
       create: (_) => ApiService(),
       child: MaterialApp.router(
-        title: 'Bihar Land Survey',
+        title: 'Bihar Land Revenue',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         routerConfig: AppRouter.router,

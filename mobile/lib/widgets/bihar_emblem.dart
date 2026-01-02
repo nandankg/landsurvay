@@ -17,14 +17,15 @@ class BiharGovtLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset(
+    // Use Image.asset for PNG files
+    return Image.asset(
       LogoAssets.biharGovtLogo,
       width: size,
       height: size,
-      colorFilter: color != null
-          ? ColorFilter.mode(color!, BlendMode.srcIn)
-          : null,
-      placeholderBuilder: (context) => _buildPlaceholder(),
+      fit: BoxFit.contain,
+      color: color,
+      colorBlendMode: color != null ? BlendMode.srcIn : null,
+      errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
     );
   }
 
@@ -150,23 +151,24 @@ class BiharBhumiLogo extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SvgPicture.asset(
+        // Use Image.asset for PNG files
+        Image.asset(
           LogoAssets.appLogo,
           width: size,
           height: size * 1.2,
-          colorFilter: color != null
-              ? ColorFilter.mode(color!, BlendMode.srcIn)
-              : null,
-          placeholderBuilder: (context) => _buildPlaceholder(),
+          fit: BoxFit.contain,
+          color: color,
+          colorBlendMode: color != null ? BlendMode.srcIn : null,
+          errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
         ),
         if (showText) ...[
           SizedBox(height: size * 0.05),
           Text(
-            'बिहार भूमि',
+            'बिहार भूमि राजस्व',
             style: TextStyle(
-              fontSize: size * 0.24,
+              fontSize: size * 0.20,
               fontWeight: FontWeight.w600,
-              color: color ?? AppTheme.primaryRed,
+              color: color ?? Colors.orange,
             ),
           ),
         ],

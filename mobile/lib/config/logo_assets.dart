@@ -20,19 +20,19 @@ class LogoAssets {
   static const String _basePath = 'assets/logos/';
 
   /// Bihar Government Official Logo
-  /// Replace with: Official Bihar Sarkar emblem
+  /// Official Bihar Sarkar emblem with Bodhi tree
   static const String biharGovtLogo = '${_basePath}bihar_govt_logo.png';
 
   /// National Informatics Centre (NIC) Logo
   /// Replace with: Official NIC logo
-  static const String nicLogo = '${_basePath}nic_logo.png';
+  static const String nicLogo = '${_basePath}nic_logo.svg';
 
   /// Revenue Department Logo
   /// Replace with: Official Revenue & Land Reforms Department logo
   static const String revenueDeptLogo = '${_basePath}revenue_dept_logo.png';
 
   /// Bihar Bhumi App Logo (Bodhi Tree)
-  /// Replace with: Official Bihar Bhumi logo
+  /// Official Bihar Sarkar logo with Bodhi tree
   static const String appLogo = '${_basePath}bihar_govt_logo.png';
 
   /// List of all logo assets (for preloading)

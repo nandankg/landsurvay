@@ -107,7 +107,7 @@ class HomeScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text(
-            'जल्द आ रहा है / Coming Soon',
+            'जल्द आ रहा है / Under Development',
             textAlign: TextAlign.center,
           ),
           behavior: SnackBarBehavior.floating,
@@ -240,9 +240,9 @@ class _ModuleCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    'Coming Soon',
+                    'Under Development',
                     style: TextStyle(
-                      fontSize: 8,
+                      fontSize: 7,
                       fontWeight: FontWeight.w700,
                       color: AppTheme.textPrimary,
                     ),
