@@ -103,16 +103,13 @@ const detectEncoding = (buffer) => {
 };
 
 /**
- * Parse Excel/CSV file with UTF-8 support for Hindi
+ * Parse Excel/CSV from buffer with UTF-8 support for Hindi
  */
-const parseFile = (filePath) => {
-  const ext = path.extname(filePath).toLowerCase();
+const parseBuffer = (fileBuffer, fileName) => {
+  const ext = path.extname(fileName).toLowerCase();
 
   let workbook;
   if (ext === '.csv') {
-    // Read CSV file as buffer
-    const fileBuffer = fs.readFileSync(filePath);
-
     // Detect encoding
     const { encoding, bomLength } = detectEncoding(fileBuffer);
     console.log(`Detected encoding: ${encoding}`);
@@ -132,8 +129,11 @@ const parseFile = (filePath) => {
       raw: false
     });
   } else {
-    // Excel files (.xls, .xlsx) - these handle encoding internally
-    workbook = XLSX.readFile(filePath, { codepage: 65001 });
+    // Excel files (.xls, .xlsx) - read from buffer
+    workbook = XLSX.read(fileBuffer, {
+      type: 'buffer',
+      codepage: 65001
+    });
   }
 
   const sheetName = workbook.SheetNames[0];
@@ -143,6 +143,14 @@ const parseFile = (filePath) => {
   const data = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false });
 
   return data.map(normalizeColumns);
+};
+
+/**
+ * Parse Excel/CSV file with UTF-8 support for Hindi (legacy - file path)
+ */
+const parseFile = (filePath) => {
+  const fileBuffer = fs.readFileSync(filePath);
+  return parseBuffer(fileBuffer, filePath);
 };
 
 /**
@@ -304,6 +312,129 @@ const processImport = async (filePath, adminUsername) => {
 };
 
 /**
+ * Process import from buffer (for cloud platforms like Render.com)
+ */
+const processImportFromBuffer = async (fileBuffer, fileName, adminUsername) => {
+  const results = {
+    totalRows: 0,
+    successCount: 0,
+    failedCount: 0,
+    errors: [],
+    created: {
+      owners: 0,
+      properties: 0
+    }
+  };
+
+  try {
+    const rows = parseBuffer(fileBuffer, fileName);
+    results.totalRows = rows.length;
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const rowIndex = i + 2; // Excel row (1-indexed + header)
+
+      try {
+        // Validate row
+        const validationErrors = validateRow(row, rowIndex);
+        if (validationErrors.length > 0) {
+          results.errors.push(...validationErrors);
+          results.failedCount++;
+          continue;
+        }
+
+        // Clean Aadhaar (convert to string first - Excel may read as number)
+        const cleanedAadhaar = row.aadhaar
+          ? String(row.aadhaar).replace(/[\s-]/g, '')
+          : null;
+
+        // Check if owner exists by Aadhaar
+        let owner = null;
+        if (cleanedAadhaar) {
+          owner = await prisma.person.findUnique({
+            where: { aadhaar: cleanedAadhaar }
+          });
+        }
+
+        // Create owner if not exists
+        if (!owner) {
+          owner = await prisma.person.create({
+            data: {
+              name: row.ownerName.toString().trim(),
+              fatherName: (row.fatherName || '').toString().trim(),
+              gender: (row.gender || 'Unknown').toString().trim(),
+              phone: (row.phone || '').toString().trim(),
+              aadhaar: cleanedAadhaar || `TEMP-${Date.now()}-${i}`
+            }
+          });
+          results.created.owners++;
+        }
+
+        // Generate Property ID if not provided
+        let propertyId = row.propertyId;
+        if (!propertyId) {
+          propertyId = await generatePropertyId(row.district);
+        }
+
+        // Check if property already exists
+        const existingProperty = await prisma.landProperty.findUnique({
+          where: { propertyUniqueId: propertyId }
+        });
+
+        if (existingProperty) {
+          results.errors.push(`Row ${rowIndex}: Property ID ${propertyId} already exists`);
+          results.failedCount++;
+          continue;
+        }
+
+        // Create property
+        await prisma.landProperty.create({
+          data: {
+            propertyUniqueId: propertyId,
+            plotNo: row.plotNo.toString().trim(),
+            khataNo: (row.khataNo || '').toString().trim(),
+            acres: row.acres ? parseFloat(row.acres) : null,
+            decimals: row.decimals ? parseFloat(row.decimals) : null,
+            district: row.district.toString().trim(),
+            village: (row.village || '').toString().trim(),
+            northBoundary: (row.northBoundary || '').toString().trim(),
+            southBoundary: (row.southBoundary || '').toString().trim(),
+            eastBoundary: (row.eastBoundary || '').toString().trim(),
+            westBoundary: (row.westBoundary || '').toString().trim(),
+            surveyStatus: 'pending',
+            ownerId: owner.id
+          }
+        });
+
+        results.created.properties++;
+        results.successCount++;
+
+      } catch (error) {
+        results.errors.push(`Row ${rowIndex}: ${error.message}`);
+        results.failedCount++;
+      }
+    }
+
+    // Log import
+    await prisma.importLog.create({
+      data: {
+        fileName: fileName,
+        totalRows: results.totalRows,
+        successCount: results.successCount,
+        failedCount: results.failedCount,
+        errors: results.errors.length > 0 ? results.errors : null,
+        importedBy: adminUsername
+      }
+    });
+
+  } catch (error) {
+    results.errors.push(`File processing error: ${error.message}`);
+  }
+
+  return results;
+};
+
+/**
  * Generate CSV template
  */
 const generateTemplate = () => {
@@ -372,7 +503,9 @@ const getImportLogs = async (page = 1, limit = 10) => {
 
 module.exports = {
   parseFile,
+  parseBuffer,
   processImport,
+  processImportFromBuffer,
   generateTemplate,
   getImportLogs
 };

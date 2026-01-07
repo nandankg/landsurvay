@@ -8,19 +8,9 @@ const { success, error } = require('../utils/responseHelper');
 const { asyncHandler } = require('../middleware/errorHandler');
 const importService = require('../services/import.service');
 
-// Configure multer for import files
-const importStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = `import-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
-    cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`);
-  }
-});
-
+// Configure multer with memory storage (works on Render.com and other cloud platforms)
 const importUpload = multer({
-  storage: importStorage,
+  storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
     const allowedTypes = [
       'text/csv',
@@ -66,10 +56,12 @@ const importData = asyncHandler(async (req, res) => {
     console.log('File uploaded:', req.file.originalname, req.file.mimetype, req.file.size);
 
     try {
-      const filePath = req.file.path;
+      // With memory storage, file is in buffer not path
+      const fileBuffer = req.file.buffer;
+      const fileName = req.file.originalname;
       const adminUsername = req.admin?.username || 'system';
 
-      const result = await importService.processImport(filePath, adminUsername);
+      const result = await importService.processImportFromBuffer(fileBuffer, fileName, adminUsername);
 
       console.log('Import result:', JSON.stringify(result, null, 2));
 
