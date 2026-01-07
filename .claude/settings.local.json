@@ -41,7 +41,9 @@
       "Bash(node generate-icons.js:*)",
       "Bash(ls:*)",
       "Bash(flutter analyze:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }
