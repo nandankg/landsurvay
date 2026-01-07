@@ -123,7 +123,8 @@ const createProperty = asyncHandler(async (req, res) => {
     southBoundary,
     eastBoundary,
     westBoundary,
-    surveyStatus
+    surveyStatus,
+    propertyUniqueId: providedPropertyId
   } = req.body;
 
   // Validate required fields
@@ -140,8 +141,21 @@ const createProperty = asyncHandler(async (req, res) => {
     return error(res, 'Owner not found', 404);
   }
 
-  // Generate unique Property ID
-  const propertyUniqueId = await generatePropertyId(district);
+  // Use provided Property ID or generate a new one
+  let propertyUniqueId;
+  if (providedPropertyId && providedPropertyId.trim()) {
+    // Check if provided Property ID already exists
+    const existingProperty = await prisma.landProperty.findUnique({
+      where: { propertyUniqueId: providedPropertyId.trim() }
+    });
+    if (existingProperty) {
+      return error(res, `Property ID "${providedPropertyId}" already exists`, 400);
+    }
+    propertyUniqueId = providedPropertyId.trim();
+  } else {
+    // Generate unique Property ID
+    propertyUniqueId = await generatePropertyId(district);
+  }
 
   const property = await prisma.landProperty.create({
     data: {

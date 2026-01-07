@@ -72,7 +72,7 @@ Admin endpoints (JWT protected):
 
 1. **One-to-Many Owner-Property**: Same Aadhaar can own multiple properties. CSV import checks existing Aadhaar before creating new owner.
 
-2. **Property ID Generation**: Format `BH{YEAR}-{DISTRICT_CODE}-{SERIAL}`. District codes: PAT=Patna, MUZ=Muzaffarpur, GAY=Gaya, BHG=Bhagalpur.
+2. **Property ID**: Users can enter a pre-generated Property ID via form or CSV import. If not provided, auto-generates with format `BH{YEAR}-{DISTRICT_CODE}-{SERIAL}`. District codes: PAT=Patna, MUZ=Muzaffarpur, GAY=Gaya, BHG=Bhagalpur.
 
 3. **Document Storage**: Local filesystem with Multer. Max 7 documents per property, 10MB per file. Supported: PDF, JPG, JPEG, PNG.
 

@@ -7,6 +7,7 @@ const { PrismaClient } = require('@prisma/client');
 const XLSX = require('xlsx');
 const fs = require('fs');
 const path = require('path');
+const iconv = require('iconv-lite');
 const { generatePropertyId } = require('./propertyId.service');
 const { validateAadhaar } = require('../utils/aadhaarMask');
 
@@ -73,16 +74,73 @@ const normalizeColumns = (row) => {
 };
 
 /**
- * Parse Excel/CSV file
+ * Detect encoding from BOM or content
+ */
+const detectEncoding = (buffer) => {
+  // Check for BOM (Byte Order Mark)
+  if (buffer[0] === 0xEF && buffer[1] === 0xBB && buffer[2] === 0xBF) {
+    return { encoding: 'utf8', bomLength: 3 };
+  }
+  if (buffer[0] === 0xFF && buffer[1] === 0xFE) {
+    return { encoding: 'utf16-le', bomLength: 2 };
+  }
+  if (buffer[0] === 0xFE && buffer[1] === 0xFF) {
+    return { encoding: 'utf16-be', bomLength: 2 };
+  }
+
+  // No BOM - try to detect by content
+  // Check if it looks like UTF-16 (has null bytes between chars)
+  let nullCount = 0;
+  for (let i = 0; i < Math.min(100, buffer.length); i++) {
+    if (buffer[i] === 0) nullCount++;
+  }
+  if (nullCount > 10) {
+    return { encoding: 'utf16-le', bomLength: 0 };
+  }
+
+  // Default to UTF-8
+  return { encoding: 'utf8', bomLength: 0 };
+};
+
+/**
+ * Parse Excel/CSV file with UTF-8 support for Hindi
  */
 const parseFile = (filePath) => {
   const ext = path.extname(filePath).toLowerCase();
-  const workbook = XLSX.readFile(filePath);
+
+  let workbook;
+  if (ext === '.csv') {
+    // Read CSV file as buffer
+    const fileBuffer = fs.readFileSync(filePath);
+
+    // Detect encoding
+    const { encoding, bomLength } = detectEncoding(fileBuffer);
+    console.log(`Detected encoding: ${encoding}`);
+
+    // Remove BOM if present and decode
+    const contentBuffer = bomLength > 0 ? fileBuffer.slice(bomLength) : fileBuffer;
+    let csvString;
+
+    if (encoding === 'utf8') {
+      csvString = contentBuffer.toString('utf8');
+    } else {
+      csvString = iconv.decode(contentBuffer, encoding);
+    }
+
+    workbook = XLSX.read(csvString, {
+      type: 'string',
+      raw: false
+    });
+  } else {
+    // Excel files (.xls, .xlsx) - these handle encoding internally
+    workbook = XLSX.readFile(filePath, { codepage: 65001 });
+  }
+
   const sheetName = workbook.SheetNames[0];
   const sheet = workbook.Sheets[sheetName];
 
   // Convert to JSON with header row
-  const data = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+  const data = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false });
 
   return data.map(normalizeColumns);
 };
@@ -149,9 +207,9 @@ const processImport = async (filePath, adminUsername) => {
           continue;
         }
 
-        // Clean Aadhaar
+        // Clean Aadhaar (convert to string first - Excel may read as number)
         const cleanedAadhaar = row.aadhaar
-          ? row.aadhaar.toString().replace(/[\s-]/g, '')
+          ? String(row.aadhaar).replace(/[\s-]/g, '')
           : null;
 
         // Check if owner exists by Aadhaar

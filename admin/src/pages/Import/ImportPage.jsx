@@ -17,12 +17,15 @@ const ImportPage = () => {
     setUploading(true)
     setResult(null)
     try {
-      const response = await importService.importFile(file)
+      // Use originFileObj if available (Ant Design wraps file object)
+      const actualFile = file.originFileObj || file
+      const response = await importService.importFile(actualFile)
       setResult(response.data)
       message.success(response.message)
       onSuccess()
       fetchLogs()
     } catch (error) {
+      console.error('Import error:', error)
       message.error(error.message || 'Import failed')
       onError(error)
     } finally {

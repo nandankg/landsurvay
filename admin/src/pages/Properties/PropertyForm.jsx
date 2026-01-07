@@ -125,6 +125,19 @@ const PropertyForm = () => {
 
           {/* Property Details */}
           <Title level={5}>Property Details</Title>
+          {!isEdit && (
+            <Row gutter={16}>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item
+                  name="propertyUniqueId"
+                  label="Property ID (संपत्ति आईडी)"
+                  tooltip="Leave empty to auto-generate"
+                >
+                  <Input placeholder="Enter property ID or leave empty for auto-generate" />
+                </Form.Item>
+              </Col>
+            </Row>
+          )}
           <Row gutter={16}>
             <Col xs={24} sm={12} md={8}>
               <Form.Item

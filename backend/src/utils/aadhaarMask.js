@@ -7,8 +7,8 @@
 const maskAadhaar = (aadhaar) => {
   if (!aadhaar) return null;
 
-  // Remove any spaces or dashes
-  const cleaned = aadhaar.replace(/[\s-]/g, '');
+  // Convert to string and remove any spaces or dashes
+  const cleaned = String(aadhaar).replace(/[\s-]/g, '');
 
   // Validate length
   if (cleaned.length !== 12) {
@@ -26,7 +26,7 @@ const maskAadhaar = (aadhaar) => {
 const formatAadhaar = (aadhaar) => {
   if (!aadhaar) return null;
 
-  const cleaned = aadhaar.replace(/[\s-]/g, '');
+  const cleaned = String(aadhaar).replace(/[\s-]/g, '');
 
   if (cleaned.length !== 12) {
     return aadhaar;
@@ -41,7 +41,7 @@ const formatAadhaar = (aadhaar) => {
 const validateAadhaar = (aadhaar) => {
   if (!aadhaar) return false;
 
-  const cleaned = aadhaar.replace(/[\s-]/g, '');
+  const cleaned = String(aadhaar).replace(/[\s-]/g, '');
 
   // Must be 12 digits
   if (!/^\d{12}$/.test(cleaned)) {

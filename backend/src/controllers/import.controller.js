@@ -24,16 +24,22 @@ const importUpload = multer({
   fileFilter: (req, file, cb) => {
     const allowedTypes = [
       'text/csv',
+      'text/plain',
+      'application/csv',
+      'application/octet-stream',
       'application/vnd.ms-excel',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     ];
     const allowedExtensions = ['.csv', '.xls', '.xlsx'];
     const ext = path.extname(file.originalname).toLowerCase();
 
-    if (allowedTypes.includes(file.mimetype) || allowedExtensions.includes(ext)) {
+    // Allow based on extension (more reliable than MIME type for CSV)
+    if (allowedExtensions.includes(ext)) {
+      cb(null, true);
+    } else if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('Only CSV and Excel files are allowed'), false);
+      cb(new Error(`Only CSV and Excel files are allowed. Got: ${file.mimetype}`), false);
     }
   },
   limits: {
@@ -48,12 +54,16 @@ const importUpload = multer({
 const importData = asyncHandler(async (req, res) => {
   importUpload(req, res, async (uploadError) => {
     if (uploadError) {
+      console.error('Upload error:', uploadError.message);
       return error(res, uploadError.message, 400);
     }
 
     if (!req.file) {
+      console.error('No file in request');
       return error(res, 'No file uploaded', 400);
     }
+
+    console.log('File uploaded:', req.file.originalname, req.file.mimetype, req.file.size);
 
     try {
       const filePath = req.file.path;
@@ -61,8 +71,10 @@ const importData = asyncHandler(async (req, res) => {
 
       const result = await importService.processImport(filePath, adminUsername);
 
+      console.log('Import result:', JSON.stringify(result, null, 2));
+
       if (result.successCount === 0 && result.errors.length > 0) {
-        return error(res, 'Import failed', 400, result.errors);
+        return error(res, 'Import failed: ' + result.errors[0], 400, result.errors);
       }
 
       return success(res, {
@@ -74,6 +86,7 @@ const importData = asyncHandler(async (req, res) => {
       }, `Import completed: ${result.successCount} records imported successfully`);
 
     } catch (processError) {
+      console.error('Process error:', processError);
       return error(res, `Import processing failed: ${processError.message}`, 500);
     }
   });
