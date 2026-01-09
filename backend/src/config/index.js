@@ -28,6 +28,13 @@ module.exports = {
     password: process.env.ADMIN_PASSWORD || 'admin123'
   },
 
+  // Mobile App Security
+  appSecurity: {
+    key: process.env.APP_SECURITY_KEY || 'BIHAR2024',
+    maxAttempts: parseInt(process.env.APP_MAX_ATTEMPTS) || 5,
+    lockDurationMinutes: parseInt(process.env.APP_LOCK_DURATION) || 30
+  },
+
   // District Codes for Property ID generation
   districtCodes: {
     'Patna': 'PAT',
