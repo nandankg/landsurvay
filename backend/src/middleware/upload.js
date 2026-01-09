@@ -7,8 +7,8 @@ const path = require('path');
 const fs = require('fs');
 const config = require('../config');
 
-// Ensure upload directory exists
-const uploadDir = path.join(process.cwd(), config.upload.uploadDir);
+// Ensure upload directory exists - use configurable base directory
+const uploadDir = path.join(config.upload.baseDir, config.upload.uploadDir);
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -52,9 +52,9 @@ const uploadSingle = upload.single('document');
 // Multiple files upload (max 7)
 const uploadMultiple = upload.array('documents', config.upload.maxFiles);
 
-// Delete file utility
+// Delete file utility - use configurable base directory
 const deleteFile = (filePath) => {
-  const fullPath = path.join(process.cwd(), filePath);
+  const fullPath = path.join(config.upload.baseDir, filePath);
   if (fs.existsSync(fullPath)) {
     fs.unlinkSync(fullPath);
     return true;

@@ -61,9 +61,9 @@ const uploadDocuments = asyncHandler(async (req, res) => {
     // Check if upload would exceed limit
     const remainingSlots = config.upload.maxFiles - currentCount;
     if (req.files.length > remainingSlots) {
-      // Delete uploaded files
+      // Delete uploaded files - use configurable base directory
       req.files.forEach(file => {
-        const filePath = path.join(process.cwd(), config.upload.uploadDir, file.filename);
+        const filePath = path.join(config.upload.baseDir, config.upload.uploadDir, file.filename);
         if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
       });
       return error(res, `Only ${remainingSlots} more documents can be uploaded`, 400);
@@ -80,8 +80,8 @@ const uploadDocuments = asyncHandler(async (req, res) => {
 
         // Generate new filename: PropertyUniqueId-SequenceNo.extension
         const newFileName = `${property.propertyUniqueId}-${sequenceNo}.${fileInfo.fileType}`;
-        const oldFilePath = path.join(process.cwd(), fileInfo.filePath);
-        const newFilePath = path.join(process.cwd(), config.upload.uploadDir, newFileName);
+        const oldFilePath = path.join(config.upload.baseDir, fileInfo.filePath);
+        const newFilePath = path.join(config.upload.baseDir, config.upload.uploadDir, newFileName);
 
         // Compress images using Sharp
         if (['jpg', 'jpeg', 'png'].includes(fileInfo.fileType)) {
@@ -130,9 +130,9 @@ const uploadDocuments = asyncHandler(async (req, res) => {
       }, `${documents.length} document(s) uploaded successfully`, 201);
 
     } catch (dbError) {
-      // Clean up uploaded files on database error
+      // Clean up uploaded files on database error - use configurable base directory
       req.files.forEach(file => {
-        const filePath = path.join(process.cwd(), config.upload.uploadDir, file.filename);
+        const filePath = path.join(config.upload.baseDir, config.upload.uploadDir, file.filename);
         if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
       });
       throw dbError;
