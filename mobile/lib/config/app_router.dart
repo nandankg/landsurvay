@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../models/models.dart';
 import '../screens/splash/splash_screen.dart';
+import '../screens/security/security_key_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/search/search_screen.dart';
 import '../screens/properties/properties_list_screen.dart';
@@ -19,6 +20,13 @@ class AppRouter {
         path: '/',
         name: 'splash',
         builder: (context, state) => const SplashScreen(),
+      ),
+
+      // Security Key Screen
+      GoRoute(
+        path: '/security-key',
+        name: 'securityKey',
+        builder: (context, state) => const SecurityKeyScreen(),
       ),
 
       // Home Screen

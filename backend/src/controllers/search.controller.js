@@ -3,6 +3,7 @@
  */
 
 const searchService = require('../services/search.service');
+const config = require('../config');
 const { success, notFound, error } = require('../utils/responseHelper');
 const { asyncHandler } = require('../middleware/errorHandler');
 
@@ -116,10 +117,13 @@ const viewDocument = asyncHandler(async (req, res) => {
     return notFound(res, 'Document not found');
   }
 
-  const filePath = path.join(process.cwd(), document.filePath);
+  // Use configurable base directory for file storage
+  const filePath = path.join(config.upload.baseDir, document.filePath);
 
   // Check if file exists
   if (!fs.existsSync(filePath)) {
+    console.error(`[viewDocument] File not found: ${filePath}`);
+    console.error(`[viewDocument] Base dir: ${config.upload.baseDir}, Document path: ${document.filePath}`);
     return notFound(res, 'File not found on server');
   }
 
@@ -157,7 +161,8 @@ const downloadDocument = asyncHandler(async (req, res) => {
     return notFound(res, 'Document not found');
   }
 
-  const filePath = path.join(process.cwd(), document.filePath);
+  // Use configurable base directory for file storage
+  const filePath = path.join(config.upload.baseDir, document.filePath);
 
   // Check if file exists
   if (!fs.existsSync(filePath)) {

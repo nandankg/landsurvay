@@ -19,7 +19,8 @@ module.exports = {
     maxFiles: parseInt(process.env.MAX_FILES) || 7,
     maxFileSize: parseInt(process.env.MAX_FILE_SIZE) || 10 * 1024 * 1024, // 10MB
     allowedTypes: ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'],
-    uploadDir: 'uploads/documents'
+    uploadDir: process.env.UPLOAD_DIR || 'uploads/documents',
+    baseDir: process.env.UPLOAD_BASE_DIR || process.cwd() // Base directory for file storage
   },
 
   // Admin (for seeding)

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/app_theme.dart';
+import '../../services/security_key_service.dart';
 import '../../widgets/bihar_emblem.dart';
 import '../../widgets/circular_text.dart';
 
@@ -17,6 +18,7 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  final _securityService = SecurityKeyService();
 
   @override
   void initState() {
@@ -43,12 +45,28 @@ class _SplashScreenState extends State<SplashScreen>
 
     _animationController.forward();
 
-    // Navigate to home after delay
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      if (mounted) {
-        context.go('/home');
-      }
-    });
+    // Check security key and navigate
+    _checkSecurityAndNavigate();
+  }
+
+  Future<void> _checkSecurityAndNavigate() async {
+    // Wait for animation to complete
+    await Future.delayed(const Duration(milliseconds: 2500));
+
+    if (!mounted) return;
+
+    // Check if security key is already verified
+    final isVerified = await _securityService.isKeyVerified();
+
+    if (!mounted) return;
+
+    if (isVerified) {
+      // Already verified, go to home
+      context.go('/home');
+    } else {
+      // Not verified, go to security key screen
+      context.go('/security-key');
+    }
   }
 
   @override

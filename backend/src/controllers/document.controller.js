@@ -155,8 +155,8 @@ const deleteDocument = asyncHandler(async (req, res) => {
     return notFound(res, 'Document not found');
   }
 
-  // Delete file from disk
-  const filePath = path.join(process.cwd(), document.filePath);
+  // Delete file from disk - use configurable base directory
+  const filePath = path.join(config.upload.baseDir, document.filePath);
   if (fs.existsSync(filePath)) {
     fs.unlinkSync(filePath);
   }
