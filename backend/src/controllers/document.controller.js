@@ -16,8 +16,8 @@ const prisma = new PrismaClient();
 /**
  * Upload documents for a property
  * POST /api/admin/properties/:id/documents
- * Documents are named: {PropertyUniqueId}-{SequenceNo}.{ext}
- * Example: BH2023-PAT-00001-1.pdf, BH2023-PAT-00001-2.jpg
+ * Documents keep their original filename (e.g., RS2968.pdf).
+ * If a file with the same name already exists, a sequence suffix is added.
  */
 const uploadDocuments = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -78,10 +78,17 @@ const uploadDocuments = asyncHandler(async (req, res) => {
         const fileInfo = getFileInfo(file);
         const originalName = file.originalname;
 
-        // Generate new filename: PropertyUniqueId-SequenceNo.extension
-        const newFileName = `${property.propertyUniqueId}-${sequenceNo}.${fileInfo.fileType}`;
+        // Preserve original filename; add sequence suffix only if collision exists
+        const ext = path.extname(originalName).toLowerCase();
+        const baseName = path.basename(originalName, ext);
+        let newFileName = `${baseName}${ext}`;
+        const destDir = path.join(config.upload.baseDir, config.upload.uploadDir);
+        if (fs.existsSync(path.join(destDir, newFileName))) {
+          newFileName = `${baseName}-${sequenceNo}${ext}`;
+        }
+
         const oldFilePath = path.join(config.upload.baseDir, fileInfo.filePath);
-        const newFilePath = path.join(config.upload.baseDir, config.upload.uploadDir, newFileName);
+        const newFilePath = path.join(destDir, newFileName);
 
         // Compress images using Sharp
         if (['jpg', 'jpeg', 'png'].includes(fileInfo.fileType)) {
