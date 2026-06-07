@@ -6,6 +6,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const config = require('./config');
+const maintenance = require('./middleware/maintenance');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -43,6 +44,9 @@ app.use(cors({
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Maintenance mode gate - blocks everything except /api/health when enabled
+app.use(maintenance);
 
 // Serve static files (uploaded documents)
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));

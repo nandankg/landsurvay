@@ -5,6 +5,9 @@ module.exports = {
   port: process.env.PORT || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
 
+  // Maintenance mode - when true, all API routes (except /api/health) return 503
+  maintenanceMode: process.env.MAINTENANCE_MODE === 'true',
+
   // Database
   databaseUrl: process.env.DATABASE_URL,
 
@@ -53,6 +56,8 @@ module.exports = {
     'Begusarai': 'BEG',
     'बेगूसराय': 'BEG',
     'Samastipur': 'SAM',
-    'समस्तीपुर': 'SAM'
+    'समस्तीपुर': 'SAM',
+    'Khagaria': 'KHG',
+    'खगड़िया': 'KHG'
   }
 };
