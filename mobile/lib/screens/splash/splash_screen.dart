@@ -55,6 +55,17 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
 
+    // First: check if the backend is in maintenance mode. If so, show the
+    // 503/maintenance screen and stop here — nothing else loads.
+    final status = await _securityService.getAppStatus();
+
+    if (!mounted) return;
+
+    if (status.maintenance) {
+      context.go('/maintenance', extra: status.message);
+      return;
+    }
+
     // Check if security key is already verified
     final isVerified = await _securityService.isKeyVerified();
 

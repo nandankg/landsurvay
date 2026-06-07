@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../models/models.dart';
 import '../screens/splash/splash_screen.dart';
 import '../screens/security/security_key_screen.dart';
+import '../screens/maintenance/maintenance_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/search/search_screen.dart';
 import '../screens/properties/properties_list_screen.dart';
@@ -27,6 +28,14 @@ class AppRouter {
         path: '/security-key',
         name: 'securityKey',
         builder: (context, state) => const SecurityKeyScreen(),
+      ),
+
+      // Maintenance Screen (shown on launch when backend is in maintenance mode)
+      GoRoute(
+        path: '/maintenance',
+        name: 'maintenance',
+        builder: (context, state) =>
+            MaintenanceScreen(message: state.extra as String?),
       ),
 
       // Home Screen

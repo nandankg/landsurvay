@@ -11,6 +11,7 @@ const appController = require('../controllers/app.controller');
 // App security endpoints
 router.post('/app/verify-key', appController.verifySecurityKey);
 router.get('/app/security-config', appController.getSecurityConfig);
+router.get('/app/status', appController.getAppStatus);
 
 // Search endpoints
 router.get('/search/mobile/:phone', searchController.searchByPhone);

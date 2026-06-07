@@ -13,7 +13,9 @@
 const config = require('../config');
 
 // Paths that remain reachable even during maintenance.
-const ALLOWLIST = ['/api/health'];
+// - /api/health: keeps Render's health probe green so the service isn't restarted.
+// - /api/app/status: lets the mobile app detect maintenance and show its 503 screen.
+const ALLOWLIST = ['/api/health', '/api/app/status'];
 
 const maintenance = (req, res, next) => {
   if (!config.maintenanceMode) {

@@ -40,7 +40,24 @@ const getSecurityConfig = asyncHandler(async (req, res) => {
   }, 'Security config retrieved');
 });
 
+/**
+ * Get app status - lets the mobile app know if maintenance mode is on.
+ * GET /api/app/status
+ * Must stay reachable during maintenance (allowlisted in maintenance middleware)
+ * so the app can show the 503/maintenance screen on launch.
+ */
+const getAppStatus = asyncHandler(async (req, res) => {
+  return success(res, {
+    maintenance: config.maintenanceMode,
+    message: config.maintenanceMode
+      ? 'सेवा अस्थायी रूप से बंद है। कृपया बाद में पुनः प्रयास करें। ' +
+        'The service is temporarily down for maintenance. Please try again later.'
+      : null
+  }, 'App status retrieved');
+});
+
 module.exports = {
   verifySecurityKey,
-  getSecurityConfig
+  getSecurityConfig,
+  getAppStatus
 };

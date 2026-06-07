@@ -77,6 +77,32 @@ class SecurityKeyService {
     return maxAttempts - attempts;
   }
 
+  /// Check whether the backend is in maintenance mode.
+  /// Returns maintenance=true with the server message when the app should be
+  /// blocked. On network errors we return maintenance=false so users are not
+  /// wrongly blocked by a flaky connection.
+  Future<AppStatus> getAppStatus() async {
+    try {
+      final response = await _dio.get('/app/status');
+      final data = response.data['data'];
+      return AppStatus(
+        maintenance: data?['maintenance'] == true,
+        message: data?['message'] as String?,
+      );
+    } on DioException catch (e) {
+      // If the endpoint itself is blocked with 503, treat that as maintenance.
+      if (e.response?.statusCode == 503) {
+        String? msg;
+        final body = e.response?.data;
+        if (body is Map) msg = body['message'] as String?;
+        return AppStatus(maintenance: true, message: msg);
+      }
+      return const AppStatus(maintenance: false, message: null);
+    } catch (_) {
+      return const AppStatus(maintenance: false, message: null);
+    }
+  }
+
   /// Fetch security config from server
   Future<void> fetchSecurityConfig() async {
     try {
@@ -226,4 +252,12 @@ enum SecurityKeyStatus {
   invalid,
   locked,
   error,
+}
+
+/// Backend maintenance status reported by GET /app/status
+class AppStatus {
+  final bool maintenance;
+  final String? message;
+
+  const AppStatus({required this.maintenance, this.message});
 }
